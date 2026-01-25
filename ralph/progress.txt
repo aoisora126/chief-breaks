@@ -135,3 +135,27 @@
   - Panel borders take up 2 characters of width (1 each side), account for this in width calculations
 ---
 
+## 2026-01-25 - US-007
+- What was implemented:
+  - Added loop control methods to internal/loop/loop.go: Pause(), Resume(), IsPaused(), IsStopped(), IsRunning()
+  - Modified Loop.Run() to check pause flag and stop cleanly when paused
+  - Integrated Loop with App in internal/tui/app.go using context for cancellation
+  - Added keyboard handlers: 's' to start, 'p' to pause, 'x' to stop
+  - Added LoopEventMsg and LoopFinishedMsg custom Bubble Tea messages for loop events
+  - Added activity line at bottom of dashboard showing current Claude activity
+  - Context-sensitive footer shortcuts based on current state
+  - Unit tests for state machine transitions in state_test.go
+- Files changed:
+  - internal/loop/loop.go (modified - added pause methods)
+  - internal/tui/app.go (modified - added loop integration, keyboard handlers, event handling)
+  - internal/tui/dashboard.go (modified - added activity line, context-sensitive shortcuts)
+  - internal/tui/state_test.go (new)
+- **Learnings for future iterations:**
+  - Use tea.Batch() to run multiple commands concurrently (e.g., runLoop + listenForEvents)
+  - Custom messages (LoopEventMsg, LoopFinishedMsg) allow clean separation of loop events from UI
+  - The loop's Events() channel should be read in a separate command to avoid blocking the UI
+  - State transitions in Update() should return immediately with new commands for async operations
+  - Context with cancel is essential for clean shutdown of the loop goroutine
+  - Footer shortcuts should be context-sensitive to guide users to valid actions
+---
+
