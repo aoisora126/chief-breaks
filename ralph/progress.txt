@@ -6,6 +6,7 @@
 - Directory structure: `cmd/chief/` for main binary, `internal/` for packages, `embed/` for embedded assets
 - Claude's stream-json format: use `--output-format stream-json --verbose` with `-p` flag
 - Use json.RawMessage for partial JSON parsing when structure varies (e.g., content blocks)
+- Embed assets: use `embed/` package with //go:embed directive, use {{PLACEHOLDER}} syntax for substitution
 
 ---
 
@@ -86,5 +87,25 @@
   - Set working directory of Claude process to PRD directory so relative paths work correctly
   - The events channel has a buffer (100) to prevent blocking during high-frequency event emission
   - When testing file-based logic, use t.TempDir() for automatic cleanup
+---
+
+## 2026-01-25 - US-005
+- What was implemented:
+  - Created embed/prompt.txt with the agent prompt that instructs Claude how to work through user stories
+  - Created embed/embed.go with //go:embed directive to embed the prompt at compile time
+  - Implemented GetPrompt(prdPath string) function that substitutes {{PRD_PATH}} placeholder with actual path
+  - Added NewLoopWithEmbeddedPrompt(prdPath, maxIter) constructor to internal/loop/loop.go
+  - Created comprehensive unit tests for the embed package
+  - Prompt includes all required instructions: read prd.json, select next story, set inProgress, implement, mark passes, append to progress.md, output <chief-complete/> when done
+- Files changed:
+  - embed/prompt.txt (new)
+  - embed/embed.go (new)
+  - embed/embed_test.go (new)
+  - internal/loop/loop.go (modified - added NewLoopWithEmbeddedPrompt function)
+- **Learnings for future iterations:**
+  - Go's //go:embed directive embeds file content at compile time, making it available as a string variable
+  - Use underscore import (`_ "embed"`) when using //go:embed with a package-level string variable
+  - The embedded prompt uses {{PRD_PATH}} as a placeholder for string substitution with strings.ReplaceAll
+  - Keep the embed package separate from internal packages to allow clean imports
 ---
 
