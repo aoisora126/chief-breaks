@@ -24,12 +24,13 @@ func GetPrompt(prdPath string) string {
 	return strings.ReplaceAll(promptTemplate, "{{PRD_PATH}}", prdPath)
 }
 
-// GetInitPrompt returns the PRD generator prompt with optional context substituted.
-func GetInitPrompt(context string) string {
+// GetInitPrompt returns the PRD generator prompt with the PRD directory and optional context substituted.
+func GetInitPrompt(prdDir, context string) string {
 	if context == "" {
 		context = "No additional context provided. Ask the user what they want to build."
 	}
-	return strings.ReplaceAll(initPromptTemplate, "{{CONTEXT}}", context)
+	result := strings.ReplaceAll(initPromptTemplate, "{{PRD_DIR}}", prdDir)
+	return strings.ReplaceAll(result, "{{CONTEXT}}", context)
 }
 
 // GetEditPrompt returns the PRD editor prompt.

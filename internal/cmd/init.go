@@ -51,8 +51,8 @@ func RunInit(opts InitOptions) error {
 		return fmt.Errorf("PRD already exists at %s. Use 'chief edit %s' to modify it", prdMdPath, opts.Name)
 	}
 
-	// Get the init prompt
-	prompt := embed.GetInitPrompt(opts.Context)
+	// Get the init prompt with the PRD directory path
+	prompt := embed.GetInitPrompt(prdDir, opts.Context)
 
 	// Launch interactive Claude session
 	fmt.Printf("Creating PRD in %s...\n", prdDir)

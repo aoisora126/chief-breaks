@@ -4,7 +4,7 @@ You are helping create a Product Requirements Document (PRD) for a software feat
 
 ## Your Task
 
-Create a `prd.md` file in the current directory with a structured PRD based on the user's description.
+Create a `prd.md` file at `{{PRD_DIR}}/prd.md` with a structured PRD based on the user's description.
 
 ## PRD Format
 

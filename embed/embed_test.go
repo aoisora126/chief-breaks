@@ -66,15 +66,25 @@ func TestGetConvertPrompt(t *testing.T) {
 }
 
 func TestGetInitPrompt(t *testing.T) {
+	prdDir := "/path/to/.chief/prds/main"
+
 	// Test with no context
-	prompt := GetInitPrompt("")
+	prompt := GetInitPrompt(prdDir, "")
 	if !strings.Contains(prompt, "No additional context provided") {
 		t.Error("Expected default context message")
 	}
 
+	// Verify PRD directory is substituted
+	if !strings.Contains(prompt, prdDir) {
+		t.Errorf("Expected prompt to contain PRD directory %q", prdDir)
+	}
+	if strings.Contains(prompt, "{{PRD_DIR}}") {
+		t.Error("Expected {{PRD_DIR}} to be substituted")
+	}
+
 	// Test with context
 	context := "Build a todo app"
-	promptWithContext := GetInitPrompt(context)
+	promptWithContext := GetInitPrompt(prdDir, context)
 	if !strings.Contains(promptWithContext, context) {
 		t.Error("Expected context to be substituted in prompt")
 	}
