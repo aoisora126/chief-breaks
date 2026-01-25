@@ -9,6 +9,7 @@
 - Embed assets: use `embed/` package with //go:embed directive, use {{PLACEHOLDER}} syntax for substitution
 - File watching: use fsnotify for filesystem changes, send events through channels, only notify on status field changes
 - Styling: Use centralized styles from internal/tui/styles.go, use GetStateStyle() and GetActivityStyle() for state-dependent rendering
+- Parallel execution: Use internal/loop/manager.go Manager for multi-PRD loops, each instance has own goroutine and context
 
 ---
 
@@ -259,5 +260,38 @@
   - Use os.ReadDir to list directories, check IsDir() to filter for subdirectories only
   - Character validation for input can be done inline without regex (simpler, faster)
   - baseDir calculation: parse the prdPath to extract parent of .chief/prds/name/
+---
+
+## 2026-01-25 - US-012
+- What was implemented:
+  - Created internal/loop/manager.go with Manager struct for parallel PRD execution
+  - LoopInstance struct tracks per-PRD state (Name, PRDPath, Loop, State, Iteration, StartTime, Error)
+  - LoopState enum: LoopStateReady, LoopStateRunning, LoopStatePaused, LoopStateStopped, LoopStateComplete, LoopStateError
+  - Manager methods: Register, Unregister, Start, Stop, Pause, GetState, GetInstance, GetAllInstances, GetRunningPRDs, GetRunningCount, StopAll
+  - ManagerEvent struct for forwarding events from any managed loop (includes PRDName)
+  - SetCompletionCallback for triggering notifications when any PRD completes
+  - Updated PRDPicker to show real-time loop status with visual indicators (▶ for running with iteration count, ⏸ for paused, ✓ for complete, ✗ for error, ■ for stopped)
+  - Added s/p/x controls in picker for selected PRD (context-sensitive footer shortcuts)
+  - Updated App to use Manager instead of single Loop instance
+  - Refactored startLoop/pauseLoop/stopLoop to work with specific PRD names
+  - switchToPRD now preserves running loops (just switches the view)
+  - Header shows running PRDs indicator (▶ +N PRDs when multiple running)
+  - Resource cleanup: stopAllLoops() called on quit, uses Manager.StopAll() which waits for all loops
+  - Comprehensive unit tests for Manager (concurrent access, state transitions, callbacks)
+- Files changed:
+  - internal/loop/manager.go (new)
+  - internal/loop/manager_test.go (new)
+  - internal/tui/app.go (modified - replaced single loop with manager, added per-PRD methods)
+  - internal/tui/dashboard.go (modified - added renderRunningIndicator)
+  - internal/tui/picker.go (modified - added LoopState/Iteration fields, manager integration, state indicators)
+- **Learnings for future iterations:**
+  - Manager pattern: centralize multi-instance management with a map of instances protected by RWMutex
+  - Each loop instance needs its own context for cancellation - store in the instance struct
+  - Use sync.WaitGroup to wait for all goroutines to complete on shutdown
+  - PRD switching should NOT stop the running loop - just change which one is being viewed
+  - State synchronization: when switching PRDs, read state from manager to show correct UI
+  - Manager events need PRDName to distinguish which PRD the event is from
+  - Loop state indicators should be compact in picker (emoji + iteration count fits well)
+  - Context-sensitive shortcuts in modals improve usability (show start/pause/stop based on selected item's state)
 ---
 
