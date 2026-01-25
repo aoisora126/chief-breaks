@@ -316,3 +316,27 @@
   - Help context should match the view it was opened from, not the current ViewHelp mode
 ---
 
+## 2026-01-25 - US-014
+- What was implemented:
+  - Added narrowWidthThreshold constant (100 columns) for responsive layout switching
+  - Added isNarrowMode() helper to detect narrow terminal width
+  - Created renderStackedDashboard() for single-column stacked layout (stories on top, details below)
+  - Created renderNarrowHeader() with condensed header elements (#N time format)
+  - Created renderNarrowFooter() with condensed keyboard shortcuts (just the keys, no descriptions)
+  - Created renderNarrowActivityLine() with more aggressive truncation
+  - Created renderNarrowLogHeader() for condensed log view header with scroll icon indicator
+  - Added truncateWithEllipsis() helper function for graceful text truncation
+  - Updated renderLogView() to use narrow variants in narrow mode
+  - Comprehensive unit tests for layout calculations (isNarrowMode, truncation, panel widths)
+- Files changed:
+  - internal/tui/dashboard.go (modified - added narrow mode support, stacked layout, condensed UI)
+  - internal/tui/layout_test.go (new - unit tests for layout calculations)
+- **Learnings for future iterations:**
+  - Use a threshold constant (narrowWidthThreshold = 100) for consistent layout switching
+  - Stacked layout divides height: 40% stories, 60% details with minimum 5 lines for stories
+  - Condensed shortcuts show just the keys without descriptions (e.g., "s t l ? j/k q")
+  - Use icons for indicators in narrow mode (▼/▽ for auto-scroll instead of text)
+  - truncateWithEllipsis handles edge cases: maxLen <= 3 doesn't add ellipsis, returns substring
+  - Panel width in stacked mode: a.width - 2 (account for borders only, not gap)
+---
+
