@@ -248,10 +248,15 @@ func runTUIWithOptions(opts *TUIOptions) {
 
 	app, err := tui.NewAppWithOptions(prdPath, opts.MaxIterations)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		fmt.Println("\nTo get started, create a PRD first:")
-		fmt.Println("  chief init              # Create default PRD")
-		fmt.Println("  chief init <name>       # Create named PRD")
+		// Check if this is a missing PRD file error
+		if os.IsNotExist(err) || strings.Contains(err.Error(), "no such file") {
+			fmt.Println("No PRD found. To get started, create your first PRD:")
+			fmt.Println()
+			fmt.Println("  chief init              # Create default PRD")
+			fmt.Println("  chief init <name>       # Create named PRD")
+		} else {
+			fmt.Printf("Error: %v\n", err)
+		}
 		os.Exit(1)
 	}
 
