@@ -236,3 +236,28 @@
   - Key handlers should check viewMode first for view-specific behavior
 ---
 
+## 2026-01-25 - US-011
+- What was implemented:
+  - Created internal/tui/picker.go with PRDPicker struct and PRDEntry type
+  - Modal overlay that lists all PRDs from .chief/prds/ directory
+  - Each entry shows: name, progress bar (█/░), completion count, status indicators (● for in-progress, ✓ for complete)
+  - Current PRD highlighted with green bullet indicator
+  - Keyboard navigation: up/k, down/j, Enter to select, Esc/l to close
+  - 'n' key enters input mode for creating new PRD with name validation (alphanumeric, -, _)
+  - Input mode with blinking cursor and visual feedback
+  - Integrated with App: added ViewPicker mode, handlePickerKeys(), switchToPRD() methods
+  - 'l' key toggle from dashboard or log view opens picker
+  - Footer shortcuts updated to show 'l: prds' option
+- Files changed:
+  - internal/tui/picker.go (new - PRDPicker, PRDEntry, Refresh, keyboard handling, rendering)
+  - internal/tui/app.go (modified - ViewPicker mode, picker integration, switchToPRD)
+  - internal/tui/dashboard.go (modified - added 'l: prds' to footer shortcuts)
+- **Learnings for future iterations:**
+  - Modal overlays can be centered using padding calculations based on terminal dimensions
+  - Input mode requires separate key handling path (check IsInputMode() before processing normal keys)
+  - PRD switching requires stopping current loop, watcher, and reinitializing state cleanly
+  - Use os.ReadDir to list directories, check IsDir() to filter for subdirectories only
+  - Character validation for input can be done inline without regex (simpler, faster)
+  - baseDir calculation: parse the prdPath to extract parent of .chief/prds/name/
+---
+
