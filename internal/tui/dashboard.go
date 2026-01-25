@@ -14,7 +14,8 @@ const (
 	storiesPanelPct  = 35 // Stories panel takes 35% of width
 	detailsPanelPct  = 65 // Details panel takes 65% of width
 	headerHeight     = 3
-	footerHeight     = 2
+	footerHeight     = 3  // Increased to accommodate activity line
+	activityHeight   = 1
 	progressBarWidth = 20
 )
 
@@ -88,13 +89,19 @@ func (a *App) renderHeader() string {
 	return lipgloss.JoinVertical(lipgloss.Left, headerLine, border)
 }
 
-// renderFooter renders the footer with keyboard shortcuts and PRD name.
+// renderFooter renders the footer with keyboard shortcuts, PRD name, and activity line.
 func (a *App) renderFooter() string {
-	// Keyboard shortcuts
-	shortcuts := []string{
-		"↑/k: up",
-		"↓/j: down",
-		"q: quit",
+	// Keyboard shortcuts (context-sensitive)
+	var shortcuts []string
+	switch a.state {
+	case StateReady, StatePaused:
+		shortcuts = []string{"s: start", "↑/k: up", "↓/j: down", "q: quit"}
+	case StateRunning:
+		shortcuts = []string{"p: pause", "x: stop", "↑/k: up", "↓/j: down", "q: quit"}
+	case StateStopped, StateError:
+		shortcuts = []string{"s: retry", "↑/k: up", "↓/j: down", "q: quit"}
+	default:
+		shortcuts = []string{"↑/k: up", "↓/j: down", "q: quit"}
 	}
 	shortcutsStr := footerStyle.Render(strings.Join(shortcuts, "  │  "))
 
@@ -105,10 +112,42 @@ func (a *App) renderFooter() string {
 	spacing := strings.Repeat(" ", max(0, a.width-lipgloss.Width(shortcutsStr)-lipgloss.Width(prdInfo)-2))
 	footerLine := lipgloss.JoinHorizontal(lipgloss.Center, shortcutsStr, spacing, prdInfo)
 
+	// Activity line
+	activityLine := a.renderActivityLine()
+
 	// Add border above
 	border := lipgloss.NewStyle().Foreground(borderColor).Render(strings.Repeat("─", a.width))
 
-	return lipgloss.JoinVertical(lipgloss.Left, border, footerLine)
+	return lipgloss.JoinVertical(lipgloss.Left, border, activityLine, footerLine)
+}
+
+// renderActivityLine renders the current activity status line.
+func (a *App) renderActivityLine() string {
+	activity := a.lastActivity
+	if activity == "" {
+		activity = "Ready to start"
+	}
+
+	// Truncate if too long
+	maxLen := a.width - 4
+	if len(activity) > maxLen && maxLen > 3 {
+		activity = activity[:maxLen-3] + "..."
+	}
+
+	// Style based on state
+	var activityStyle lipgloss.Style
+	switch a.state {
+	case StateRunning:
+		activityStyle = lipgloss.NewStyle().Foreground(primaryColor).Padding(0, 1)
+	case StateError:
+		activityStyle = lipgloss.NewStyle().Foreground(errorColor).Padding(0, 1)
+	case StateComplete:
+		activityStyle = lipgloss.NewStyle().Foreground(successColor).Padding(0, 1)
+	default:
+		activityStyle = lipgloss.NewStyle().Foreground(mutedColor).Padding(0, 1)
+	}
+
+	return activityStyle.Render(activity)
 }
 
 // renderStoriesPanel renders the stories list panel.

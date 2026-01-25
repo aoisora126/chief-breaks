@@ -25,6 +25,7 @@ type Loop struct {
 	logFile   *os.File
 	mu        sync.Mutex
 	stopped   bool
+	paused    bool
 }
 
 // NewLoop creates a new Loop instance.
@@ -71,6 +72,10 @@ func (l *Loop) Run(ctx context.Context) error {
 	for {
 		l.mu.Lock()
 		if l.stopped {
+			l.mu.Unlock()
+			return nil
+		}
+		if l.paused {
 			l.mu.Unlock()
 			return nil
 		}
@@ -126,6 +131,14 @@ func (l *Loop) Run(ctx context.Context) error {
 			}
 			return nil
 		}
+
+		// Check pause flag after iteration (loop stops after current iteration completes)
+		l.mu.Lock()
+		if l.paused {
+			l.mu.Unlock()
+			return nil
+		}
+		l.mu.Unlock()
 	}
 }
 
@@ -249,4 +262,39 @@ func (l *Loop) Stop() {
 		// Kill the process
 		l.claudeCmd.Process.Kill()
 	}
+}
+
+// Pause sets the pause flag. The loop will stop after the current iteration completes.
+func (l *Loop) Pause() {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.paused = true
+}
+
+// Resume clears the pause flag.
+func (l *Loop) Resume() {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.paused = false
+}
+
+// IsPaused returns whether the loop is paused.
+func (l *Loop) IsPaused() bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.paused
+}
+
+// IsStopped returns whether the loop is stopped.
+func (l *Loop) IsStopped() bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.stopped
+}
+
+// IsRunning returns whether a Claude process is currently running.
+func (l *Loop) IsRunning() bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.claudeCmd != nil && l.claudeCmd.Process != nil
 }
