@@ -352,9 +352,43 @@ func runTUIWithOptions(opts *TUIOptions) {
 	}
 
 	p := tea.NewProgram(app, tea.WithAltScreen())
-	if _, err := p.Run(); err != nil {
+	model, err := p.Run()
+	if err != nil {
 		fmt.Printf("Error running program: %v\n", err)
 		os.Exit(1)
+	}
+
+	// Check for post-exit actions
+	if finalApp, ok := model.(tui.App); ok {
+		switch finalApp.PostExitAction {
+		case tui.PostExitInit:
+			// Run init command then restart TUI
+			initOpts := cmd.InitOptions{
+				Name: finalApp.PostExitPRD,
+			}
+			if err := cmd.RunInit(initOpts); err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
+			// Restart TUI with the new PRD
+			opts.PRDPath = fmt.Sprintf(".chief/prds/%s/prd.json", finalApp.PostExitPRD)
+			runTUIWithOptions(opts)
+
+		case tui.PostExitEdit:
+			// Run edit command then restart TUI
+			editOpts := cmd.EditOptions{
+				Name:  finalApp.PostExitPRD,
+				Merge: opts.Merge,
+				Force: opts.Force,
+			}
+			if err := cmd.RunEdit(editOpts); err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
+			// Restart TUI with the edited PRD
+			opts.PRDPath = fmt.Sprintf(".chief/prds/%s/prd.json", finalApp.PostExitPRD)
+			runTUIWithOptions(opts)
+		}
 	}
 }
 
