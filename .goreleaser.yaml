@@ -115,3 +115,30 @@ release:
   draft: false
   prerelease: auto
   name_template: "Chief v{{.Version}}"
+
+# Homebrew tap configuration
+brews:
+  - name: chief
+    # Repository to push the formula to
+    repository:
+      owner: minicodemonkey
+      name: homebrew-chief
+      # Use HOMEBREW_TAP_GITHUB_TOKEN for pushing to tap repo
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    # Alternative: commit to same repo (Formula/ directory)
+    # repository:
+    #   owner: minicodemonkey
+    #   name: chief
+    #   token: "{{ .Env.GITHUB_TOKEN }}"
+    folder: Formula
+    homepage: "https://github.com/minicodemonkey/chief"
+    description: "Autonomous agent loop for working through PRDs with Claude Code"
+    license: "MIT"
+    # Custom install script
+    install: |
+      bin.install "chief"
+    # Test block
+    test: |
+      assert_match "chief", shell_output("#{bin}/chief --version")
+    # Skip upload on snapshot builds
+    skip_upload: auto
