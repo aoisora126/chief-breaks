@@ -10,19 +10,30 @@ import (
 
 const (
 	// Layout constants
-	minWidth         = 80
-	storiesPanelPct  = 35 // Stories panel takes 35% of width
-	detailsPanelPct  = 65 // Details panel takes 65% of width
-	headerHeight     = 3
-	footerHeight     = 3  // Increased to accommodate activity line
-	activityHeight   = 1
-	progressBarWidth = 20
+	minWidth             = 80
+	narrowWidthThreshold = 100 // Below this, switch to stacked layout
+	storiesPanelPct      = 35  // Stories panel takes 35% of width
+	detailsPanelPct      = 65  // Details panel takes 65% of width
+	headerHeight         = 3
+	footerHeight         = 3 // Increased to accommodate activity line
+	activityHeight       = 1
+	progressBarWidth     = 20
 )
+
+// isNarrowMode returns true if the terminal width is below the threshold for stacked layout.
+func (a *App) isNarrowMode() bool {
+	return a.width < narrowWidthThreshold
+}
 
 // renderDashboard renders the full dashboard view.
 func (a *App) renderDashboard() string {
 	if a.width == 0 || a.height == 0 {
 		return "Loading..."
+	}
+
+	// Use stacked layout for narrow terminals
+	if a.isNarrowMode() {
+		return a.renderStackedDashboard()
 	}
 
 	header := a.renderHeader()
@@ -40,6 +51,30 @@ func (a *App) renderDashboard() string {
 
 	// Join panels horizontally
 	content := lipgloss.JoinHorizontal(lipgloss.Top, storiesPanel, detailsPanel)
+
+	// Stack header, content, and footer
+	return lipgloss.JoinVertical(lipgloss.Left, header, content, footer)
+}
+
+// renderStackedDashboard renders the dashboard with stacked layout for narrow terminals.
+func (a *App) renderStackedDashboard() string {
+	header := a.renderNarrowHeader()
+	footer := a.renderNarrowFooter()
+
+	// Calculate content area height
+	contentHeight := a.height - headerHeight - footerHeight - 2 // -2 for panel borders
+
+	// Split height between stories (40%) and details (60%)
+	storiesHeight := max((contentHeight*40)/100, 5)
+	detailsHeight := contentHeight - storiesHeight - 1 // -1 for gap between panels
+
+	panelWidth := a.width - 2 // Account for borders
+
+	storiesPanel := a.renderStoriesPanel(panelWidth, storiesHeight)
+	detailsPanel := a.renderDetailsPanel(panelWidth, detailsHeight)
+
+	// Join panels vertically
+	content := lipgloss.JoinVertical(lipgloss.Left, storiesPanel, detailsPanel)
 
 	// Stack header, content, and footer
 	return lipgloss.JoinVertical(lipgloss.Left, header, content, footer)
@@ -67,6 +102,33 @@ func (a *App) renderHeader() string {
 	// Combine elements
 	leftPart := lipgloss.JoinHorizontal(lipgloss.Center, brand, "  ", state, "  ", runningIndicator)
 	rightPart := lipgloss.JoinHorizontal(lipgloss.Center, iteration, "  ", elapsedStr)
+
+	// Create the full header line with proper spacing
+	spacing := strings.Repeat(" ", max(0, a.width-lipgloss.Width(leftPart)-lipgloss.Width(rightPart)-2))
+	headerLine := lipgloss.JoinHorizontal(lipgloss.Center, leftPart, spacing, rightPart)
+
+	// Add a border below
+	border := DividerStyle.Render(strings.Repeat("─", a.width))
+
+	return lipgloss.JoinVertical(lipgloss.Left, headerLine, border)
+}
+
+// renderNarrowHeader renders a condensed header for narrow terminals.
+func (a *App) renderNarrowHeader() string {
+	// Branding
+	brand := headerStyle.Render("chief")
+
+	// State indicator - use the centralized style system
+	stateStyle := GetStateStyle(a.state)
+	state := stateStyle.Render(fmt.Sprintf("[%s]", a.state.String()))
+
+	// Condensed iteration and time
+	elapsed := a.GetElapsedTime()
+	iterTime := SubtitleStyle.Render(fmt.Sprintf("#%d %s", a.iteration, formatDuration(elapsed)))
+
+	// Combine elements
+	leftPart := lipgloss.JoinHorizontal(lipgloss.Center, brand, " ", state)
+	rightPart := iterTime
 
 	// Create the full header line with proper spacing
 	spacing := strings.Repeat(" ", max(0, a.width-lipgloss.Width(leftPart)-lipgloss.Width(rightPart)-2))
@@ -146,6 +208,69 @@ func (a *App) renderFooter() string {
 	border := DividerStyle.Render(strings.Repeat("─", a.width))
 
 	return lipgloss.JoinVertical(lipgloss.Left, border, activityLine, footerLine)
+}
+
+// renderNarrowFooter renders a condensed footer for narrow terminals.
+func (a *App) renderNarrowFooter() string {
+	// Condensed keyboard shortcuts for narrow mode
+	var shortcuts []string
+
+	if a.viewMode == ViewLog {
+		// Log view shortcuts - condensed
+		shortcuts = []string{"t", "l", "?", "j/k", "q"}
+	} else {
+		// Dashboard view shortcuts - condensed
+		switch a.state {
+		case StateReady, StatePaused:
+			shortcuts = []string{"s", "t", "l", "?", "j/k", "q"}
+		case StateRunning:
+			shortcuts = []string{"p", "x", "t", "l", "?", "j/k", "q"}
+		case StateStopped, StateError:
+			shortcuts = []string{"s", "t", "l", "?", "j/k", "q"}
+		default:
+			shortcuts = []string{"t", "l", "?", "j/k", "q"}
+		}
+	}
+	shortcutsStr := footerStyle.Render(strings.Join(shortcuts, " "))
+
+	// PRD name - truncate if needed
+	prdName := a.prdName
+	maxPRDLen := 12
+	if len(prdName) > maxPRDLen {
+		prdName = prdName[:maxPRDLen-2] + ".."
+	}
+	prdInfo := footerStyle.Render(prdName)
+
+	// Create footer line with proper spacing
+	spacing := strings.Repeat(" ", max(0, a.width-lipgloss.Width(shortcutsStr)-lipgloss.Width(prdInfo)-2))
+	footerLine := lipgloss.JoinHorizontal(lipgloss.Center, shortcutsStr, spacing, prdInfo)
+
+	// Activity line - use narrower truncation
+	activityLine := a.renderNarrowActivityLine()
+
+	// Add border above
+	border := DividerStyle.Render(strings.Repeat("─", a.width))
+
+	return lipgloss.JoinVertical(lipgloss.Left, border, activityLine, footerLine)
+}
+
+// renderNarrowActivityLine renders the activity line for narrow terminals.
+func (a *App) renderNarrowActivityLine() string {
+	activity := a.lastActivity
+	if activity == "" {
+		activity = "Ready"
+	}
+
+	// More aggressive truncation for narrow mode
+	maxLen := a.width - 2
+	if len(activity) > maxLen && maxLen > 3 {
+		activity = activity[:maxLen-3] + "..."
+	}
+
+	// Use the centralized activity style system
+	activityStyle := GetActivityStyle(a.state)
+
+	return activityStyle.Render(activity)
 }
 
 // renderActivityLine renders the current activity status line.
@@ -368,14 +493,34 @@ func min(a, b int) int {
 	return b
 }
 
+// truncateWithEllipsis truncates text to maxLen characters, adding "..." if truncated.
+func truncateWithEllipsis(text string, maxLen int) string {
+	if maxLen <= 3 {
+		if len(text) > maxLen {
+			return text[:maxLen]
+		}
+		return text
+	}
+	if len(text) <= maxLen {
+		return text
+	}
+	return text[:maxLen-3] + "..."
+}
+
 // renderLogView renders the full-screen log view.
 func (a *App) renderLogView() string {
 	if a.width == 0 || a.height == 0 {
 		return "Loading..."
 	}
 
-	header := a.renderLogHeader()
-	footer := a.renderFooter()
+	var header, footer string
+	if a.isNarrowMode() {
+		header = a.renderNarrowLogHeader()
+		footer = a.renderNarrowFooter()
+	} else {
+		header = a.renderLogHeader()
+		footer = a.renderFooter()
+	}
 
 	// Calculate content area height
 	contentHeight := a.height - headerHeight - footerHeight - 2
@@ -420,6 +565,43 @@ func (a *App) renderLogHeader() string {
 	// Combine elements
 	leftPart := lipgloss.JoinHorizontal(lipgloss.Center, brand, "  ", viewIndicator, "  ", state)
 	rightPart := lipgloss.JoinHorizontal(lipgloss.Center, iteration, "  ", scrollIndicator)
+
+	// Create the full header line with proper spacing
+	spacing := strings.Repeat(" ", max(0, a.width-lipgloss.Width(leftPart)-lipgloss.Width(rightPart)-2))
+	headerLine := lipgloss.JoinHorizontal(lipgloss.Center, leftPart, spacing, rightPart)
+
+	// Add a border below
+	border := DividerStyle.Render(strings.Repeat("─", a.width))
+
+	return lipgloss.JoinVertical(lipgloss.Left, headerLine, border)
+}
+
+// renderNarrowLogHeader renders a condensed header for the log view in narrow mode.
+func (a *App) renderNarrowLogHeader() string {
+	// Branding
+	brand := headerStyle.Render("chief")
+
+	// Condensed view indicator
+	viewIndicator := lipgloss.NewStyle().
+		Foreground(PrimaryColor).
+		Bold(true).
+		Render("[Log]")
+
+	// State indicator
+	stateStyle := GetStateStyle(a.state)
+	state := stateStyle.Render(fmt.Sprintf("[%s]", a.state.String()))
+
+	// Condensed iteration and scroll indicator
+	var scrollIcon string
+	if a.logViewer.IsAutoScrolling() {
+		scrollIcon = lipgloss.NewStyle().Foreground(SuccessColor).Render("▼")
+	} else {
+		scrollIcon = lipgloss.NewStyle().Foreground(MutedColor).Render("▽")
+	}
+	rightPart := SubtitleStyle.Render(fmt.Sprintf("#%d", a.iteration)) + " " + scrollIcon
+
+	// Combine elements
+	leftPart := lipgloss.JoinHorizontal(lipgloss.Center, brand, " ", viewIndicator, " ", state)
 
 	// Create the full header line with proper spacing
 	spacing := strings.Repeat(" ", max(0, a.width-lipgloss.Width(leftPart)-lipgloss.Width(rightPart)-2))
