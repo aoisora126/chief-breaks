@@ -72,6 +72,7 @@ const (
 	ViewDashboard ViewMode = iota
 	ViewLog
 	ViewPicker
+	ViewHelp
 )
 
 // App is the main Bubble Tea model for the Chief TUI.
@@ -104,6 +105,10 @@ type App struct {
 	// PRD picker
 	picker  *PRDPicker
 	baseDir string // Base directory for .chief/prds/
+
+	// Help overlay
+	helpOverlay     *HelpOverlay
+	previousViewMode ViewMode // View to return to when closing help
 
 	// Completion notification callback
 	onCompletion func(prdName string)
@@ -164,6 +169,7 @@ func NewAppWithOptions(prdPath string, maxIter int) (*App, error) {
 		logViewer:     NewLogViewer(),
 		picker:        picker,
 		baseDir:       baseDir,
+		helpOverlay:   NewHelpOverlay(),
 	}, nil
 }
 
@@ -235,6 +241,30 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return a.handlePRDUpdate(msg)
 
 	case tea.KeyMsg:
+		// Handle help overlay first (can be opened/closed from any view)
+		if msg.String() == "?" {
+			if a.viewMode == ViewHelp {
+				// Close help, return to previous view
+				a.viewMode = a.previousViewMode
+			} else {
+				// Open help, remember current view
+				a.previousViewMode = a.viewMode
+				a.viewMode = ViewHelp
+				a.helpOverlay.SetSize(a.width, a.height)
+				a.helpOverlay.SetViewMode(a.previousViewMode)
+			}
+			return a, nil
+		}
+
+		// Handle help view (only Esc closes it besides ?)
+		if a.viewMode == ViewHelp {
+			if msg.String() == "esc" {
+				a.viewMode = a.previousViewMode
+			}
+			// Ignore other keys in help view
+			return a, nil
+		}
+
 		// Handle picker view separately (it has its own input mode)
 		if a.viewMode == ViewPicker {
 			return a.handlePickerKeys(msg)
@@ -519,9 +549,17 @@ func (a App) View() string {
 		return a.renderLogView()
 	case ViewPicker:
 		return a.renderPickerView()
+	case ViewHelp:
+		return a.renderHelpView()
 	default:
 		return a.renderDashboard()
 	}
+}
+
+// renderHelpView renders the help overlay.
+func (a *App) renderHelpView() string {
+	a.helpOverlay.SetSize(a.width, a.height)
+	return a.helpOverlay.Render()
 }
 
 // handlePickerKeys handles keyboard input when the picker is active.
