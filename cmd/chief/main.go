@@ -17,6 +17,9 @@ func main() {
 		case "init":
 			runInit()
 			return
+		case "edit":
+			runEdit()
+			return
 		case "help", "--help", "-h":
 			printHelp()
 			return
@@ -39,6 +42,31 @@ func runInit() {
 	}
 
 	if err := cmd.RunInit(opts); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func runEdit() {
+	opts := cmd.EditOptions{}
+
+	// Parse arguments: chief edit [name] [--merge] [--force]
+	for i := 2; i < len(os.Args); i++ {
+		arg := os.Args[i]
+		switch arg {
+		case "--merge":
+			opts.Merge = true
+		case "--force":
+			opts.Force = true
+		default:
+			// If not a flag, treat as PRD name (first non-flag arg)
+			if opts.Name == "" && !strings.HasPrefix(arg, "-") {
+				opts.Name = arg
+			}
+		}
+	}
+
+	if err := cmd.RunEdit(opts); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
@@ -83,11 +111,19 @@ Usage:
 
 Commands:
   init [name] [context]     Create a new PRD interactively
+  edit [name] [options]     Edit an existing PRD interactively
   help                      Show this help message
+
+Edit Options:
+  --merge                   Auto-merge progress on conversion conflicts
+  --force                   Auto-overwrite on conversion conflicts
 
 Examples:
   chief init                Create PRD in .chief/prds/main/
   chief init auth           Create PRD in .chief/prds/auth/
   chief init auth "JWT authentication for REST API"
-                            Create PRD with context hint`)
+                            Create PRD with context hint
+  chief edit                Edit PRD in .chief/prds/main/
+  chief edit auth           Edit PRD in .chief/prds/auth/
+  chief edit auth --merge   Edit and auto-merge progress`)
 }

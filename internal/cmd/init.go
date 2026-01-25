@@ -89,15 +89,28 @@ func runInteractiveClaude(workDir, prompt string) error {
 	return cmd.Run()
 }
 
+// ConvertOptions contains configuration for the conversion command.
+type ConvertOptions struct {
+	PRDDir string // PRD directory containing prd.md
+	Merge  bool   // Auto-merge without prompting on conversion conflicts
+	Force  bool   // Auto-overwrite without prompting on conversion conflicts
+}
+
 // RunConvert converts prd.md to prd.json using Claude.
 // This is a placeholder that will be fully implemented in US-018.
 func RunConvert(prdDir string) error {
-	prdMdPath := filepath.Join(prdDir, "prd.md")
-	prdJsonPath := filepath.Join(prdDir, "prd.json")
+	return RunConvertWithOptions(ConvertOptions{PRDDir: prdDir})
+}
+
+// RunConvertWithOptions converts prd.md to prd.json using Claude with options.
+// The Merge and Force flags will be fully implemented in US-019.
+func RunConvertWithOptions(opts ConvertOptions) error {
+	prdMdPath := filepath.Join(opts.PRDDir, "prd.md")
+	prdJsonPath := filepath.Join(opts.PRDDir, "prd.json")
 
 	// Check if prd.md exists
 	if _, err := os.Stat(prdMdPath); os.IsNotExist(err) {
-		return fmt.Errorf("prd.md not found in %s", prdDir)
+		return fmt.Errorf("prd.md not found in %s", opts.PRDDir)
 	}
 
 	// Read prd.md content
@@ -136,7 +149,7 @@ PRD Content:
 		"-p", conversionPrompt,
 		"--output-format", "text",
 	)
-	cmd.Dir = prdDir
+	cmd.Dir = opts.PRDDir
 
 	output, err := cmd.Output()
 	if err != nil {
