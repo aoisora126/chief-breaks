@@ -109,3 +109,29 @@
   - Keep the embed package separate from internal packages to allow clean imports
 ---
 
+## 2026-01-25 - US-006
+- What was implemented:
+  - Created internal/tui/app.go with main Bubble Tea model containing App struct with state, iteration tracking, PRD data
+  - Created internal/tui/dashboard.go with two-panel layout (Stories list + Details panel)
+  - Created internal/tui/styles.go with basic Lip Gloss style definitions and status icons
+  - Stories panel shows: status icon (checkmark/dot/circle), story ID, truncated title with selection highlight
+  - Details panel shows: full title, description, acceptance criteria list, priority and status
+  - Header shows: "chief" branding, state indicator with colors (Ready/Running/etc), iteration count, elapsed time
+  - Footer shows: keyboard shortcuts (up/k, down/j, q), current PRD name
+  - Progress bar at bottom of stories panel showing completion percentage with filled/empty bars
+  - Keyboard navigation: up/k moves selection up, down/j moves selection down, q quits
+  - Updated cmd/chief/main.go to use the new TUI package with PRD path argument support
+- Files changed:
+  - internal/tui/app.go (new)
+  - internal/tui/dashboard.go (new)
+  - internal/tui/styles.go (new)
+  - cmd/chief/main.go (modified)
+- **Learnings for future iterations:**
+  - lipgloss.Color is a type, not a style - use lipgloss.NewStyle().Foreground(color) to render text with a color
+  - Bubble Tea uses tea.WithAltScreen() for full-screen TUI applications
+  - The App struct needs width/height from tea.WindowSizeMsg to properly render layouts
+  - Use lipgloss.JoinHorizontal/JoinVertical for composing UI elements
+  - Text wrapping needs to be handled manually - created wrapText helper function
+  - Panel borders take up 2 characters of width (1 each side), account for this in width calculations
+---
+
