@@ -504,3 +504,27 @@
   - The completion callback pattern allows sound to play for ANY PRD completing, not just the viewed one
 ---
 
+## 2026-01-25 - US-021
+- What was implemented:
+  - Created internal/cmd/status.go with RunStatus() and RunList() functions
+  - `chief status` prints progress for default PRD (main): project name, X/Y stories complete, list of incomplete stories
+  - `chief status <name>` prints progress for a specific PRD
+  - `chief list` prints all PRDs in .chief/prds/ with name, title, and progress percentage
+  - Output is plain text, suitable for scripting
+  - Exit code 0 for success, non-zero for errors (handled in main.go)
+  - Handles edge cases: missing PRD (error), no PRDs directory (friendly message), empty PRD (no stories), all complete
+  - Updated cmd/chief/main.go with status and list subcommands
+  - Updated help text with new commands and examples
+  - Comprehensive unit tests for all scenarios
+- Files changed:
+  - internal/cmd/status.go (new)
+  - internal/cmd/status_test.go (new)
+  - cmd/chief/main.go (modified - added status/list subcommands, help text)
+- **Learnings for future iterations:**
+  - Follow existing cmd package patterns (XxxOptions struct, RunXxx function)
+  - Use BaseDir field in options struct for easy testing with t.TempDir()
+  - The PRD package LoadPRD() is the canonical way to load PRDs
+  - For list commands, skip invalid PRDs gracefully rather than failing (os.ReadDir + continue on LoadPRD error)
+  - Output format should be plain text suitable for scripting (no fancy formatting)
+---
+
