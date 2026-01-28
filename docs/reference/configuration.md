@@ -36,6 +36,8 @@ By default, Claude Code asks for permission before executing bash commands, writ
 
 ::: warning
 Chief runs Claude with full permissions to modify your codebase. Only run Chief on PRDs you trust.
+
+For additional isolation, consider using [Claude Code's sandbox mode](https://docs.anthropic.com/en/docs/claude-code/sandboxing) or running Chief in a Docker container.
 :::
 
 ## No Global Config
