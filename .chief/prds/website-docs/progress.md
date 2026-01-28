@@ -290,3 +290,14 @@
   - Click-outside pattern for dropdowns: add `document.addEventListener('click', handler)` in `onMounted` and clean up in `onUnmounted`
   - ChatGPT URL format: `https://chatgpt.com/?q=<encoded>`, Claude URL format: `https://claude.ai/new?q=<encoded>`
 ---
+
+## 2026-01-28 - US-018
+- **What was implemented**: VitePress local search enabled via built-in search provider
+- **Files changed**:
+  - `docs/.vitepress/config.ts` - added `search: { provider: 'local' }` to `themeConfig`
+  - `.chief/prds/website-docs/prd.json` - marked US-018 as passes: true
+- **Learnings for future iterations:**
+  - VitePress built-in local search (`provider: 'local'`) covers all common search needs: `/` key trigger, search icon in nav bar, page titles and content previews, and keyboard navigation — no additional configuration needed
+  - The search configuration goes in `themeConfig.search`, not at the top-level config
+  - No additional packages needed — local search is built into VitePress core
+---
