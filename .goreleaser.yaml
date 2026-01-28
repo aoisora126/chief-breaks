@@ -123,9 +123,8 @@ brews:
     repository:
       owner: minicodemonkey
       name: homebrew-chief
-      # Use HOMEBREW_TAP_GITHUB_TOKEN for pushing to tap repo
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-      directory: Formula
+    directory: Formula
     homepage: "https://minicodemonkey.github.io/chief/"
     description: "Autonomous agent loop for working through PRDs with Claude Code"
     license: "MIT"
