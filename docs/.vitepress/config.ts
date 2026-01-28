@@ -6,8 +6,15 @@ export default defineConfig({
   description: 'Autonomous PRD Agent',
   base: '/chief/',
 
+  // Force dark mode only
+  appearance: 'force-dark',
+
   vite: {
     plugins: [tailwindcss()]
+  },
+
+  markdown: {
+    theme: 'tokyo-night'
   },
 
   themeConfig: {
