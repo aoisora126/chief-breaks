@@ -13,6 +13,8 @@
 - Code blocks use Shiki's `tokyo-night` theme via `markdown.theme` in config.ts
 - Links in markdown files should NOT include base path (use `/guide/quick-start` not `/chief/guide/quick-start`)
 - Links in Vue components MUST include base path (use `/chief/guide/quick-start` not `/guide/quick-start`)
+- Use `transformPageData` in config.ts to inject build-time data into pages via `pageData.frontmatter.head` script tags
+- The `#doc-before` slot in DefaultTheme.Layout only renders on doc pages, not on home/landing pages
 
 ---
 
@@ -272,4 +274,19 @@
   - Some stories may already be implemented by earlier stories that created placeholder pages with full content (US-008 created all doc pages with initial content)
   - Always verify the build passes even when no new content is added — the build check is the quality gate
   - The troubleshooting page uses a consistent Symptom/Cause/Solution pattern with code examples, which is a good format for debugging guides
+---
+
+## 2026-01-28 - US-017
+- **What was implemented**: LLM Actions Vue component with dropdown menu for copying page markdown and opening in ChatGPT/Claude
+- **Files changed**:
+  - `docs/.vitepress/theme/components/LlmActions.vue` - new component with dropdown menu containing "Copy as Markdown", "Open in ChatGPT", and "Open in Claude" actions
+  - `docs/.vitepress/config.ts` - added `transformPageData` hook to inject raw markdown content into `window.__DOC_RAW` via head script tag
+  - `docs/.vitepress/theme/HomeLayout.vue` - integrated LlmActions component into `#doc-before` slot so it appears on doc pages only (not landing page)
+- **Learnings for future iterations:**
+  - VitePress `transformPageData` hook runs at build time and can inject scripts via `pageData.frontmatter.head` push
+  - Use `siteConfig.srcDir` (not `siteConfig.root`) to construct file paths for reading markdown source in transformers
+  - The `#doc-before` slot in DefaultTheme.Layout renders content above doc pages only — it does not appear on home layout pages
+  - `JSON.stringify()` is essential for safely embedding raw markdown in a `<script>` tag (handles newlines, quotes, etc.)
+  - Click-outside pattern for dropdowns: add `document.addEventListener('click', handler)` in `onMounted` and clean up in `onUnmounted`
+  - ChatGPT URL format: `https://chatgpt.com/?q=<encoded>`, Claude URL format: `https://claude.ai/new?q=<encoded>`
 ---
