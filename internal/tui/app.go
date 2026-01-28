@@ -168,8 +168,9 @@ func NewAppWithOptions(prdPath string, maxIter int) (*App, error) {
 	}
 
 	// Determine base directory for PRD picker
-	// If path contains .chief/prds/, go up to the parent
-	baseDir := filepath.Dir(filepath.Dir(filepath.Dir(prdPath)))
+	// If path contains .chief/prds/, go up to the project root (4 levels up from prd.json)
+	// .chief/prds/<name>/prd.json -> .chief/prds/<name> -> .chief/prds -> .chief -> project root
+	baseDir := filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(prdPath))))
 	if !strings.Contains(prdPath, ".chief/prds/") {
 		// Fallback to current working directory
 		baseDir, _ = os.Getwd()
