@@ -1,3 +1,7 @@
+---
+description: Complete guide to Chief's PRD format including prd.md and prd.json structure, user story fields, selection logic, and best practices.
+---
+
 # PRD Format
 
 Chief uses a structured PRD format with two files: a human-readable markdown file (`prd.md`) and a machine-readable JSON file (`prd.json`). Together, they give Chief everything it needs to autonomously build your feature.

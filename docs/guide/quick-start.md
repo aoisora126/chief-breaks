@@ -1,3 +1,7 @@
+---
+description: Get Chief running quickly. Install via Homebrew, create a PRD, and watch Chief autonomously build your features.
+---
+
 # Quick Start
 
 Get Chief running in under 5 minutes.

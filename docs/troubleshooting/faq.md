@@ -1,3 +1,7 @@
+---
+description: Frequently asked questions about Chief, the autonomous PRD agent. Answers about usage, requirements, and how it works.
+---
+
 # FAQ
 
 Frequently asked questions about Chief.

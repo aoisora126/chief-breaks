@@ -1,3 +1,7 @@
+---
+description: Deep dive into the Ralph Loop, Chief's core execution model that drives Claude to autonomously complete user stories one by one.
+---
+
 # The Ralph Loop
 
 The Ralph Loop is Chief's core execution model—a continuous cycle that drives Claude to complete user stories one by one. It's the engine that makes autonomous development possible.

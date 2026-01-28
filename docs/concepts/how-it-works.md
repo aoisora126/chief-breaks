@@ -1,3 +1,7 @@
+---
+description: Learn how Chief works as an autonomous PRD agent, transforming product requirements into working code through the Ralph Loop execution model.
+---
+
 # How Chief Works
 
 Chief is an autonomous PRD agent that transforms your product requirements into working code—without constant back-and-forth prompting.

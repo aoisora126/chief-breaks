@@ -1,3 +1,7 @@
+---
+description: Understand the .chief directory structure where Chief stores all state. Self-contained, portable, and git-friendly.
+---
+
 # The .chief Directory
 
 Chief stores all of its state in a single `.chief/` directory at the root of your project. This is a deliberate design choice — there are no global config files, no hidden state in your home directory, no external databases. Everything Chief needs lives right alongside your code.

@@ -1,3 +1,7 @@
+---
+description: Complete CLI reference for Chief. All commands, flags, keyboard shortcuts, exit codes, and environment variables.
+---
+
 # CLI Reference
 
 Chief provides a minimal but powerful CLI. All commands operate on the current working directory's `.chief/` folder.

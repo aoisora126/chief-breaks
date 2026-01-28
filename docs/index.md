@@ -1,5 +1,6 @@
 ---
 layout: home
+description: Chief is an autonomous PRD agent that transforms product requirements into working code. Write a PRD, run Chief, watch your code get built.
 
 hero:
   name: Chief

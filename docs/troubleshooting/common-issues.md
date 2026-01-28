@@ -1,3 +1,7 @@
+---
+description: Troubleshoot common Chief issues including Claude not found, permission errors, audio problems, and loop failures.
+---
+
 # Common Issues
 
 Solutions to frequently encountered problems.

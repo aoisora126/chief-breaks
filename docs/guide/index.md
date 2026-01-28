@@ -1,5 +1,6 @@
 ---
 layout: doc
+description: Get started with Chief, the autonomous PRD agent. Learn how to install, configure, and run Chief to build features from product requirements.
 ---
 
 # Getting Started

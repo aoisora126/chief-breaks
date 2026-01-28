@@ -1,3 +1,7 @@
+---
+description: Chief configuration reference. CLI flags, environment variables, and settings for customizing Chief's behavior.
+---
+
 # Configuration
 
 Chief is designed to work with zero configuration. All state lives in `.chief/` and settings are passed via CLI flags.

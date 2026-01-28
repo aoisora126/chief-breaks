@@ -1,3 +1,7 @@
+---
+description: Install Chief on macOS or Linux via Homebrew, install script, manual download, or from source. Single binary with no runtime dependencies.
+---
+
 # Installation
 
 Chief is distributed as a single binary with no runtime dependencies. Choose your preferred installation method below.

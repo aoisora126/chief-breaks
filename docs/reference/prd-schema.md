@@ -1,3 +1,7 @@
+---
+description: Complete prd.json schema reference for Chief. TypeScript interfaces, field types, and validation rules for PRD files.
+---
+
 # PRD Schema Reference
 
 Complete schema documentation for `prd.json`.
