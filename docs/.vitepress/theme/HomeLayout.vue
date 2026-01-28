@@ -4,6 +4,7 @@ import DefaultTheme from 'vitepress/theme'
 import Hero from './components/Hero.vue'
 import HowItWorks from './components/HowItWorks.vue'
 import Features from './components/Features.vue'
+import Footer from './components/Footer.vue'
 
 const { Layout } = DefaultTheme
 const { frontmatter } = useData()
@@ -15,6 +16,7 @@ const { frontmatter } = useData()
       <Hero />
       <HowItWorks />
       <Features />
+      <Footer />
     </template>
     <!-- Hide default hero -->
     <template #home-hero-info></template>
