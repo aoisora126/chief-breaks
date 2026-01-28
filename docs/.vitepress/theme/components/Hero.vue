@@ -23,10 +23,10 @@ async function copyInstallCommand() {
       <!-- Left side: Text content -->
       <div class="hero-content">
         <h1 class="hero-headline">
-          <span class="hero-title-gradient">Autonomous PRD Agent</span>
+          <span class="hero-title-gradient">Build Big Projects with Claude</span>
         </h1>
         <p class="hero-subheadline">
-          Write a PRD. Run <code>chief</code>. Watch your code get built automatically by Claude.
+          Chief breaks your work into tasks. Claude builds them one by one.
         </p>
 
         <!-- Install command with copy button -->
@@ -73,29 +73,29 @@ async function copyInstallCommand() {
           <div class="terminal-body">
             <div class="terminal-line line-1">
               <span class="terminal-prompt">$</span>
-              <span class="terminal-command typing-1">chief init</span>
+              <span class="terminal-command typing-1">brew install minicodemonkey/chief/chief</span>
             </div>
             <div class="terminal-line line-2">
-              <span class="terminal-output output-1">Creating new PRD...</span>
+              <span class="terminal-output output-1">==> Fetching minicodemonkey/chief/chief</span>
             </div>
             <div class="terminal-line line-3">
-              <span class="terminal-output output-2 text-tokyo-green">PRD created at .chief/prds/my-feature/prd.md</span>
+              <span class="terminal-output output-2">==> Downloading chief-darwin-arm64.tar.gz</span>
             </div>
             <div class="terminal-line line-4">
-              <span class="terminal-prompt">$</span>
-              <span class="terminal-command typing-2">chief</span>
+              <span class="terminal-output output-3">==> Installing chief</span>
             </div>
             <div class="terminal-line line-5">
-              <span class="terminal-output output-3">Starting autonomous loop...</span>
+              <span class="terminal-output output-4 text-tokyo-green">==> Installation successful!</span>
             </div>
             <div class="terminal-line line-6">
-              <span class="terminal-output output-4 text-tokyo-accent">Working on: US-001 - Setup Project</span>
+              <span class="terminal-prompt">$</span>
+              <span class="terminal-command typing-2">chief new</span>
             </div>
             <div class="terminal-line line-7">
-              <span class="terminal-output output-5 text-tokyo-green">Story completed! Committing...</span>
+              <span class="terminal-output output-5">Creating project in .chief/prds/main...</span>
             </div>
             <div class="terminal-line line-8">
-              <span class="terminal-output output-6 text-tokyo-purple">All stories complete!</span>
+              <span class="terminal-output output-6 text-tokyo-green">Launching Claude to help you get started...</span>
             </div>
           </div>
         </div>
@@ -346,17 +346,17 @@ async function copyInstallCommand() {
 
 /* Animation delays for each line */
 .line-1 { animation-delay: 0.5s; }
-.line-2 { animation-delay: 1.2s; }
-.line-3 { animation-delay: 1.8s; }
+.line-2 { animation-delay: 1.6s; }
+.line-3 { animation-delay: 2.2s; }
 .line-4 { animation-delay: 2.8s; }
-.line-5 { animation-delay: 3.5s; }
-.line-6 { animation-delay: 4.2s; }
-.line-7 { animation-delay: 5.2s; }
-.line-8 { animation-delay: 6.0s; }
+.line-5 { animation-delay: 3.4s; }
+.line-6 { animation-delay: 4.0s; }
+.line-7 { animation-delay: 4.8s; }
+.line-8 { animation-delay: 5.4s; }
 
 /* Animation loop: restart after all lines complete */
 .terminal-body {
-  animation: resetTerminal 9s infinite;
+  animation: resetTerminal 8s infinite;
 }
 
 @keyframes fadeIn {
@@ -387,7 +387,7 @@ async function copyInstallCommand() {
   overflow: hidden;
   white-space: nowrap;
   width: 0;
-  animation: typing 0.4s steps(10) forwards;
+  animation: typing 0.8s steps(35) forwards;
 }
 
 .typing-1 {
@@ -395,12 +395,25 @@ async function copyInstallCommand() {
 }
 
 .typing-2 {
-  animation-delay: 2.9s;
+  animation-delay: 4.2s;
+  animation-duration: 0.3s;
+  animation-timing-function: steps(10);
 }
 
 @keyframes typing {
   from { width: 0; }
   to { width: 100%; }
+}
+
+/* Blinking cursor */
+.terminal-cursor {
+  color: #7aa2f7;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 /* Responsive design */

@@ -1,5 +1,5 @@
 // Package cmd provides CLI command implementations for Chief.
-// This includes init, edit, status, and list commands that can be
+// This includes new, edit, status, and list commands that can be
 // run from the command line without launching the full TUI.
 package cmd
 
@@ -13,15 +13,15 @@ import (
 	"github.com/minicodemonkey/chief/internal/prd"
 )
 
-// InitOptions contains configuration for the init command.
-type InitOptions struct {
+// NewOptions contains configuration for the new command.
+type NewOptions struct {
 	Name    string // PRD name (default: "main")
 	Context string // Optional context to pass to Claude
 	BaseDir string // Base directory for .chief/prds/ (default: current directory)
 }
 
-// RunInit creates a new PRD by launching an interactive Claude session.
-func RunInit(opts InitOptions) error {
+// RunNew creates a new PRD by launching an interactive Claude session.
+func RunNew(opts NewOptions) error {
 	// Set defaults
 	if opts.Name == "" {
 		opts.Name = "main"
@@ -65,7 +65,7 @@ func RunInit(opts InitOptions) error {
 
 	// Check if prd.md was created
 	if _, err := os.Stat(prdMdPath); os.IsNotExist(err) {
-		fmt.Println("\nNo prd.md was created. Run 'chief init' again to try again.")
+		fmt.Println("\nNo prd.md was created. Run 'chief new' again to try again.")
 		return nil
 	}
 

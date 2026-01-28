@@ -17,7 +17,7 @@ chief [command] [flags]
 | Command | Description |
 |---------|-------------|
 | *(default)* | Run the Ralph Loop on the active PRD |
-| `init` | Create a new PRD in the current project |
+| `new` | Create a new PRD in the current project |
 | `edit` | Open the PRD for editing |
 | `status` | Show current PRD progress |
 | `list` | List all PRDs in the project |
@@ -66,12 +66,12 @@ If your project has only one PRD, Chief auto-detects it. Use `--prd` when you ha
 
 ---
 
-### chief init
+### chief new
 
 Create a new PRD in the current project. This command walks you through an interactive setup, then scaffolds the `.chief/prds/<name>/` directory with template files.
 
 ```bash
-chief init
+chief new
 ```
 
 **Interactive prompts:**
@@ -93,8 +93,8 @@ chief init
 **Examples:**
 
 ```bash
-# Initialize a new PRD (interactive)
-chief init
+# Create a new PRD (interactive)
+chief new
 
 # Then follow the prompts:
 #   PRD name: auth-system
@@ -103,7 +103,7 @@ chief init
 ```
 
 ::: info
-Run `chief init` from the root of your project. Chief creates the `.chief/` directory if it doesn't exist.
+Run `chief new` from the root of your project. Chief creates the `.chief/` directory if it doesn't exist.
 :::
 
 ---

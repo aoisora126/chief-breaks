@@ -18,7 +18,7 @@ This directory is for screenshots and visual assets for the Chief documentation 
 
 ### Chief Init Flow
 - **File**: `chief-init.png`
-- **Description**: Terminal output of running `chief init` showing the interactive prompts and directory creation
+- **Description**: Terminal output of running `chief new` showing the interactive prompts and directory creation
 - **Dimensions**: ~800x400px recommended
 - **Used in**: Quick Start guide, CLI Reference
 
@@ -26,7 +26,7 @@ This directory is for screenshots and visual assets for the Chief documentation 
 
 ### Full Workflow Recording
 - **Format**: asciinema recording (`.cast` file hosted on asciinema.org)
-- **Description**: Full workflow showing `chief init` → editing PRD → running `chief` → watching completion
+- **Description**: Full workflow showing `chief new` → editing PRD → running `chief` → watching completion
 - **Used in**: Quick Start guide
 
 ## Guidelines

@@ -179,7 +179,7 @@ The core value proposition: transform a PRD into working code with minimal human
 - [ ] List all PRDs in `.chief/prds/` directory
 - [ ] Each entry shows: name, project title, progress bar, status (Ready/Running/Paused/Complete)
 - [ ] Keyboard navigation: ↑/↓ to select, Enter to switch, Esc to cancel
-- [ ] `n` key in picker opens prompt for new PRD name (launches `chief init <name>`)
+- [ ] `n` key in picker opens prompt for new PRD name (launches `chief new <name>`)
 - [ ] Current PRD highlighted with indicator
 - [ ] Typecheck passes
 
@@ -239,7 +239,7 @@ The core value proposition: transform a PRD into working code with minimal human
 - [ ] "Check claude.log for full error details" hint
 - [ ] `s` key shows "Retry" in error state
 - [ ] Interrupted story warning: when starting with `inProgress: true` story, show notice in details panel
-- [ ] Empty state: when no PRDs exist, show centered message with `chief init` instructions
+- [ ] Empty state: when no PRDs exist, show centered message with `chief new` instructions
 - [ ] Typecheck passes
 
 ---
@@ -252,9 +252,9 @@ The core value proposition: transform a PRD into working code with minimal human
 **Description:** As a user, I want to create new PRDs interactively so that I can describe features and have Claude help structure them.
 
 **Acceptance Criteria:**
-- [ ] `chief init` creates PRD in `.chief/prds/main/`
-- [ ] `chief init <name>` creates PRD in `.chief/prds/<name>/`
-- [ ] `chief init <name> "<context>"` passes context to Claude
+- [ ] `chief new` creates PRD in `.chief/prds/main/`
+- [ ] `chief new <name>` creates PRD in `.chief/prds/<name>/`
+- [ ] `chief new <name> "<context>"` passes context to Claude
 - [ ] Command launches interactive Claude Code session with embedded PRD generator prompt
 - [ ] Creates directory structure if it doesn't exist
 - [ ] After Claude session ends, automatically run conversion (see US-018)
@@ -270,7 +270,7 @@ The core value proposition: transform a PRD into working code with minimal human
 **Acceptance Criteria:**
 - [ ] `chief edit` edits `.chief/prds/main/prd.md`
 - [ ] `chief edit <name>` edits `.chief/prds/<name>/prd.md`
-- [ ] Error if PRD doesn't exist (suggest `chief init` instead)
+- [ ] Error if PRD doesn't exist (suggest `chief new` instead)
 - [ ] Launch interactive Claude session with existing prd.md as context
 - [ ] After session ends, run conversion with progress protection (see US-019)
 - [ ] Typecheck passes
@@ -282,7 +282,7 @@ The core value proposition: transform a PRD into working code with minimal human
 
 **Acceptance Criteria:**
 - [ ] Create `internal/prd/generator.go` with conversion logic
-- [ ] Conversion runs: after `chief init`, after `chief edit`, before `chief run` if prd.md is newer
+- [ ] Conversion runs: after `chief new`, after `chief edit`, before `chief run` if prd.md is newer
 - [ ] Invoke Claude one-shot (non-interactive) with embedded converter prompt
 - [ ] Claude reads prd.md and writes prd.json
 - [ ] Verify prd.json is valid JSON after conversion
@@ -499,7 +499,7 @@ The core value proposition: transform a PRD into working code with minimal human
 
 ## Success Metrics
 
-- User can go from `chief init` to running loop in under 2 minutes
+- User can go from `chief new` to running loop in under 2 minutes
 - Loop correctly completes all stories in a test PRD without human intervention
 - TUI remains responsive during Claude execution (no blocking)
 - Binary size under 15MB

@@ -41,7 +41,7 @@ func RunEdit(opts EditOptions) error {
 
 	// Check if prd.md exists
 	if _, err := os.Stat(prdMdPath); os.IsNotExist(err) {
-		return fmt.Errorf("PRD not found at %s. Use 'chief init %s' to create it first", prdMdPath, opts.Name)
+		return fmt.Errorf("PRD not found at %s. Use 'chief new %s' to create it first", prdMdPath, opts.Name)
 	}
 
 	// Get the edit prompt

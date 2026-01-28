@@ -52,10 +52,10 @@ Navigate to your project directory and initialize Chief:
 
 ```bash
 cd your-project
-chief init
+chief new
 ```
 
-<PlaceholderImage label="Screenshot: chief init flow" height="250px" />
+<PlaceholderImage label="Screenshot: chief new flow" height="250px" />
 
 This creates a `.chief/` directory with a sample PRD to get you started. The PRD includes:
 
@@ -98,7 +98,7 @@ Chief launches a beautiful TUI (Terminal User Interface) that shows:
 Chief runs autonomously. You can watch the progress or walk away - it will complete your PRD and play a sound when done.
 :::
 
-<AsciinemaPlaceholder label="Recording: Full Chief Workflow (chief init → chief)" />
+<AsciinemaPlaceholder label="Recording: Full Chief Workflow (chief new → chief)" />
 
 ## What's Next?
 

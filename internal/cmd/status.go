@@ -109,7 +109,7 @@ func RunList(opts ListOptions) error {
 	entries, err := os.ReadDir(prdsDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println("No PRDs found. Run 'chief init' to create one.")
+			fmt.Println("No PRDs found. Run 'chief new' to create one.")
 			return nil
 		}
 		return fmt.Errorf("failed to read PRDs directory: %w", err)
@@ -156,7 +156,7 @@ func RunList(opts ListOptions) error {
 	}
 
 	if len(prds) == 0 {
-		fmt.Println("No PRDs found. Run 'chief init' to create one.")
+		fmt.Println("No PRDs found. Run 'chief new' to create one.")
 		return nil
 	}
 

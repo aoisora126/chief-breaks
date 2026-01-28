@@ -32,8 +32,8 @@ func main() {
 	// Handle subcommands first
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
-		case "init":
-			runInit()
+		case "new":
+			runNew()
 			return
 		case "edit":
 			runEdit()
@@ -199,10 +199,10 @@ func parseTUIFlags() *TUIOptions {
 	return opts
 }
 
-func runInit() {
-	opts := cmd.InitOptions{}
+func runNew() {
+	opts := cmd.NewOptions{}
 
-	// Parse arguments: chief init [name] [context...]
+	// Parse arguments: chief new [name] [context...]
 	if len(os.Args) > 2 {
 		opts.Name = os.Args[2]
 	}
@@ -210,7 +210,7 @@ func runInit() {
 		opts.Context = strings.Join(os.Args[3:], " ")
 	}
 
-	if err := cmd.RunInit(opts); err != nil {
+	if err := cmd.RunNew(opts); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
@@ -278,13 +278,21 @@ func runTUIWithOptions(opts *TUIOptions) {
 			prdPath = findAvailablePRD()
 		}
 
-		// If still no PRD found, show helpful message
+		// If still no PRD found, auto-launch new mode
 		if prdPath == "" {
-			fmt.Println("No PRD found. To get started, create your first PRD:")
+			fmt.Println("No PRD found. Let's create your first one!")
 			fmt.Println()
-			fmt.Println("  chief init              # Create default PRD")
-			fmt.Println("  chief init <name>       # Create named PRD")
-			os.Exit(1)
+			newOpts := cmd.NewOptions{
+				Name: "main",
+			}
+			if err := cmd.RunNew(newOpts); err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
+			// Restart TUI with the new PRD
+			opts.PRDPath = ".chief/prds/main/prd.json"
+			runTUIWithOptions(opts)
+			return
 		}
 	}
 
@@ -324,8 +332,8 @@ func runTUIWithOptions(opts *TUIOptions) {
 				fmt.Println()
 			}
 			fmt.Println("Or create a new one:")
-			fmt.Println("  chief init              # Create default PRD")
-			fmt.Println("  chief init <name>       # Create named PRD")
+			fmt.Println("  chief new               # Create default PRD")
+			fmt.Println("  chief new <name>        # Create named PRD")
 		} else {
 			fmt.Printf("Error: %v\n", err)
 		}
@@ -362,11 +370,11 @@ func runTUIWithOptions(opts *TUIOptions) {
 	if finalApp, ok := model.(tui.App); ok {
 		switch finalApp.PostExitAction {
 		case tui.PostExitInit:
-			// Run init command then restart TUI
-			initOpts := cmd.InitOptions{
+			// Run new command then restart TUI
+			newOpts := cmd.NewOptions{
 				Name: finalApp.PostExitPRD,
 			}
-			if err := cmd.RunInit(initOpts); err != nil {
+			if err := cmd.RunNew(newOpts); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}
@@ -400,7 +408,7 @@ Usage:
   chief <command> [arguments]
 
 Commands:
-  init [name] [context]     Create a new PRD interactively
+  new [name] [context]      Create a new PRD interactively
   edit [name] [options]     Edit an existing PRD interactively
   status [name]             Show progress for a PRD (default: main)
   list                      List all PRDs with progress
@@ -432,9 +440,9 @@ Examples:
                             Launch auth PRD with 5 max iterations
   chief --no-sound          Launch TUI without audio notifications
   chief --verbose           Launch with raw Claude output visible
-  chief init                Create PRD in .chief/prds/main/
-  chief init auth           Create PRD in .chief/prds/auth/
-  chief init auth "JWT authentication for REST API"
+  chief new                 Create PRD in .chief/prds/main/
+  chief new auth            Create PRD in .chief/prds/auth/
+  chief new auth "JWT authentication for REST API"
                             Create PRD with context hint
   chief edit                Edit PRD in .chief/prds/main/
   chief edit auth           Edit PRD in .chief/prds/auth/

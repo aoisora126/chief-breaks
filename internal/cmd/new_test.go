@@ -35,16 +35,16 @@ func TestIsValidPRDName(t *testing.T) {
 	}
 }
 
-func TestRunInitCreatesDirectory(t *testing.T) {
+func TestRunNewCreatesDirectory(t *testing.T) {
 	// Create a temporary directory for testing
 	tmpDir := t.TempDir()
 
 	// Test that directory structure is created correctly
-	// We can't fully test RunInit without Claude, but we can verify directory creation logic
+	// We can't fully test RunNew without Claude, but we can verify directory creation logic
 	name := "test-prd"
 	prdDir := filepath.Join(tmpDir, ".chief", "prds", name)
 
-	// Simulate what RunInit does for directory creation
+	// Simulate what RunNew does for directory creation
 	if err := os.MkdirAll(prdDir, 0755); err != nil {
 		t.Fatalf("Failed to create test directory: %v", err)
 	}
@@ -66,21 +66,21 @@ func TestRunInitCreatesDirectory(t *testing.T) {
 	}
 }
 
-func TestRunInitRejectsInvalidName(t *testing.T) {
+func TestRunNewRejectsInvalidName(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	opts := InitOptions{
+	opts := NewOptions{
 		Name:    "invalid name with space",
 		BaseDir: tmpDir,
 	}
 
-	err := RunInit(opts)
+	err := RunNew(opts)
 	if err == nil {
 		t.Error("Expected error for invalid name")
 	}
 }
 
-func TestRunInitRejectsExistingPRD(t *testing.T) {
+func TestRunNewRejectsExistingPRD(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create existing prd.md
@@ -93,12 +93,12 @@ func TestRunInitRejectsExistingPRD(t *testing.T) {
 		t.Fatalf("Failed to create prd.md: %v", err)
 	}
 
-	opts := InitOptions{
+	opts := NewOptions{
 		Name:    "existing",
 		BaseDir: tmpDir,
 	}
 
-	err := RunInit(opts)
+	err := RunNew(opts)
 	if err == nil {
 		t.Error("Expected error for existing PRD")
 	}

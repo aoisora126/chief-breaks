@@ -39,7 +39,7 @@ Chief uses this folder as the working context for the entire run. All reads and 
 
 ### `prd.md`
 
-The human-readable product requirements document. You write this file (or generate it with `chief init`). It contains context, background, technical notes, and anything else that helps Claude understand what to build.
+The human-readable product requirements document. You write this file (or generate it with `chief new`). It contains context, background, technical notes, and anything else that helps Claude understand what to build.
 
 This file is included in the prompt sent to Claude at the start of each iteration. Write it as if you're briefing a senior developer who's new to the project — the more context you provide, the better the output.
 
@@ -112,7 +112,7 @@ Chief has no global configuration. There is no `~/.chiefrc`, no `~/.config/chief
 
 This means:
 
-- **No setup beyond installation** — Install the binary, run `chief init`, and you're ready
+- **No setup beyond installation** — Install the binary, run `chief new`, and you're ready
 - **No conflicts between projects** — Each project has its own isolated state
 - **No "works on my machine" issues** — The state is the same for everyone who clones the repo
 - **No cleanup needed** — Delete `.chief/` and it's as if Chief was never there

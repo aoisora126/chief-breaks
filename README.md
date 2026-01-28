@@ -14,7 +14,7 @@ brew install minicodemonkey/chief/chief
 curl -fsSL https://chief.codemonkey.io/install.sh | sh
 
 # Create your first PRD
-chief init
+chief new
 
 # Launch the TUI to start working
 chief
@@ -68,7 +68,7 @@ Chief operates as an autonomous agent loop that orchestrates Claude Code to impl
 
 ### Workflow
 
-1. **Create PRD** - `chief init` launches Claude to help you define your requirements in `prd.md`
+1. **Create PRD** - `chief new` launches Claude to help you define your requirements in `prd.md`
 2. **Convert** - Chief automatically converts `prd.md` to the structured `prd.json` format
 3. **Launch TUI** - `chief` starts the interactive dashboard
 4. **Start Loop** - Press `s` to begin the autonomous implementation
@@ -122,9 +122,9 @@ go build -ldflags "-X main.Version=$(git describe --tags)" -o chief ./cmd/chief
 |---------|-------------|
 | `chief` | Launch TUI with default PRD (`.chief/prds/main/`) |
 | `chief <name>` | Launch TUI with named PRD (`.chief/prds/<name>/`) |
-| `chief init` | Create a new PRD interactively |
-| `chief init <name>` | Create a named PRD |
-| `chief init <name> "context"` | Create PRD with context hint |
+| `chief new` | Create a new PRD interactively |
+| `chief new <name>` | Create a named PRD |
+| `chief new <name> "context"` | Create PRD with context hint |
 | `chief edit` | Edit the default PRD |
 | `chief edit <name>` | Edit a named PRD |
 | `chief status` | Show progress for default PRD |
@@ -147,7 +147,7 @@ go build -ldflags "-X main.Version=$(git describe --tags)" -o chief ./cmd/chief
 
 ```bash
 # Create a PRD with context
-chief init auth "JWT authentication for REST API"
+chief new auth "JWT authentication for REST API"
 
 # Launch with custom iteration limit
 chief -n 20 auth
@@ -275,7 +275,7 @@ Chief selects the next story to work on using this logic:
 
 ### prd.md Format
 
-When using `chief init` or `chief edit`, you write in markdown format:
+When using `chief new` or `chief edit`, you write in markdown format:
 
 ```markdown
 # Project Name

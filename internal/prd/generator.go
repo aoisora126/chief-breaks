@@ -35,7 +35,7 @@ const (
 
 // Convert converts prd.md to prd.json using Claude one-shot mode.
 // This function is called:
-// - After chief init (new PRD creation)
+// - After chief new (new PRD creation)
 // - After chief edit (PRD modification)
 // - Before chief run if prd.md is newer than prd.json
 //

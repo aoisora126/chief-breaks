@@ -234,7 +234,7 @@
   - `docs/reference/cli.md` - expanded from basic reference to comprehensive CLI documentation with:
     - Top-level usage overview with command summary table (mirrors `chief --help` structure)
     - Enhanced `chief` (default) command with all flags, defaults, and multiple examples including combined flags
-    - Enhanced `chief init` with interactive prompt details, directory structure output, and example walkthrough
+    - Enhanced `chief new` with interactive prompt details, directory structure output, and example walkthrough
     - Enhanced `chief edit` with `$EDITOR` tips and flag documentation
     - Enhanced `chief status` with example output showing completion counts
     - Enhanced `chief list` with example output showing multi-PRD overview
@@ -309,7 +309,7 @@
   - `docs/.vitepress/theme/components/PlaceholderImage.vue` - new reusable placeholder component with customizable dimensions and label, styled with Tokyo Night colors and dashed border
   - `docs/.vitepress/theme/components/AsciinemaPlaceholder.vue` - new placeholder for terminal recordings with embed instructions
   - `docs/.vitepress/theme/index.ts` - registered PlaceholderImage and AsciinemaPlaceholder as global components via `enhanceApp`
-  - `docs/guide/quick-start.md` - added placeholders for chief init flow, TUI dashboard, and asciinema recording
+  - `docs/guide/quick-start.md` - added placeholders for chief new flow, TUI dashboard, and asciinema recording
   - `docs/reference/cli.md` - added TUI log view placeholder in keyboard shortcuts section
   - `docs/public/images/README.md` - created with list of required screenshots, recording specs, and image guidelines
   - `.chief/prds/website-docs/prd.json` - marked US-019 as passes: true

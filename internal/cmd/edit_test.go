@@ -19,11 +19,11 @@ func TestRunEditRequiresPRDExists(t *testing.T) {
 		t.Error("Expected error for non-existent PRD")
 	}
 
-	// Error message should suggest using chief init
+	// Error message should suggest using chief new
 	if err != nil {
 		errStr := err.Error()
-		if !contains(errStr, "chief init") {
-			t.Errorf("Error should suggest chief init, got: %s", errStr)
+		if !contains(errStr, "chief new") {
+			t.Errorf("Error should suggest chief new, got: %s", errStr)
 		}
 	}
 }

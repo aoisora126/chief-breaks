@@ -137,7 +137,7 @@ chief --no-sound
 
 1. Create a PRD:
    ```bash
-   chief init
+   chief new
    ```
 
 2. Or specify the PRD explicitly:

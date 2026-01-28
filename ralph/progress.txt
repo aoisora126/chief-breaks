@@ -347,7 +347,7 @@
 - What was implemented:
   - Added renderErrorPanel() function to display error details in the right panel when in error state
   - Error panel shows: red ERROR indicator, error message with word wrapping, claude.log hint, retry instructions
-  - Added renderEmptyPRDPanel() function for empty PRD state with chief init instructions
+  - Added renderEmptyPRDPanel() function for empty PRD state with chief new instructions
   - Added hasInterruptedStory() and getInterruptedStory() helper functions
   - Added renderInterruptedWarning() for displaying a warning banner when there's an inProgress story
   - Updated renderDetailsPanel() to check for empty PRD, error state, and interrupted stories
@@ -361,7 +361,7 @@
   - Interrupted story warning is shown only in Ready state (not when running or in error)
   - Error messages are wrapped using existing wrapText() helper for consistent display
   - Use StateErrorStyle from styles.go for consistent error text coloring
-  - Empty state should show both the problem AND actionable instructions (chief init command)
+  - Empty state should show both the problem AND actionable instructions (chief new command)
   - Warning banner uses a dark amber background (#3D3000) with yellow text for visibility
 ---
 
@@ -370,7 +370,7 @@
   - Created embed/init_prompt.txt with PRD generator prompt that guides Claude to create structured PRDs
   - Updated embed/embed.go with GetInitPrompt() function for context substitution
   - Created internal/cmd/init.go with RunInit() function implementing the init command
-  - Supports: chief init, chief init <name>, chief init <name> <context>
+  - Supports: chief new, chief new <name>, chief new <name> <context>
   - Creates directory structure .chief/prds/<name>/ if it doesn't exist
   - Validates PRD names (alphanumeric, hyphens, underscores only)
   - Detects existing PRDs and suggests chief edit instead
@@ -399,7 +399,7 @@
   - Updated embed/embed.go with GetEditPrompt() function (no placeholders needed for edit)
   - Created internal/cmd/edit.go with RunEdit() function implementing the edit command
   - Supports: chief edit, chief edit <name>, chief edit <name> --merge, chief edit <name> --force
-  - Validates PRD name and checks that prd.md exists (suggests chief init if not)
+  - Validates PRD name and checks that prd.md exists (suggests chief new if not)
   - Launches interactive Claude session with embedded edit prompt
   - After session ends, runs conversion with progress protection options (--merge, --force)
   - Added ConvertOptions struct and RunConvertWithOptions() function for conversion with flags
@@ -431,7 +431,7 @@
   - Added PRD structure validation using LoadPRD() after conversion
   - Refactored internal/cmd/init.go to delegate to the new prd.Convert() function
   - Updated cmd/chief/main.go to check NeedsConversion() before starting TUI
-  - Auto-conversion runs: after chief init, after chief edit, before chief run (if prd.md newer)
+  - Auto-conversion runs: after chief new, after chief edit, before chief run (if prd.md newer)
   - Comprehensive unit tests for cleanJSONOutput, validateJSON, NeedsConversion functions
   - Added tests for GetConvertPrompt, GetInitPrompt, GetEditPrompt in embed_test.go
 - Files changed:

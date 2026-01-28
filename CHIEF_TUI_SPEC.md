@@ -54,7 +54,7 @@ chief/
 │   ├── prd/
 │   │   ├── types.go             # PRD structs
 │   │   ├── loader.go            # Load, watch, list PRDs from .chief/prds/
-│   │   └── generator.go         # `chief init` (launches Claude)
+│   │   └── generator.go         # `chief new` (launches Claude)
 │   ├── progress/
 │   │   └── progress.go          # Append to progress.md
 │   ├── tui/
@@ -285,7 +285,7 @@ your-project/
 ├── .chief/
 │   └── prds/
 │       ├── main/                 # Default PRD
-│       │   ├── prd.md            # Human-readable PRD (from `chief init`)
+│       │   ├── prd.md            # Human-readable PRD (from `chief new`)
 │       │   ├── prd.json          # Machine-readable PRD (auto-generated from prd.md)
 │       │   ├── progress.md       # Human-readable progress log
 │       │   └── claude.log        # Raw Claude output
@@ -344,9 +344,9 @@ chief auth                 # Run specific PRD by name (.chief/prds/auth/)
 chief ./path/to/prd.json   # Run PRD from explicit path
 
 # PRD generation
-chief init                 # Create new PRD in .chief/prds/main/
-chief init auth            # Create new PRD in .chief/prds/auth/
-chief init auth "login"    # Create with initial context for "login"
+chief new                 # Create new PRD in .chief/prds/main/
+chief new auth            # Create new PRD in .chief/prds/auth/
+chief new auth "login"    # Create with initial context for "login"
 chief edit                 # Edit existing PRD (default: main)
 chief edit auth            # Edit specific PRD
 
@@ -371,7 +371,7 @@ chief list                 # List all PRDs in .chief/prds/
 
 ### When Conversion Happens
 
-1. **After `chief init`** — Automatically converts prd.md → prd.json
+1. **After `chief new`** — Automatically converts prd.md → prd.json
 2. **After `chief edit`** — Automatically converts prd.md → prd.json
 3. **Before `chief run`** — If prd.md is newer than prd.json, converts first
 
@@ -730,10 +730,10 @@ Shown when no PRDs exist in the .chief/prds/ directory.
                               │                                              │
                               │    Get started by creating a new PRD:        │
                               │                                              │
-                              │    $ chief init                              │
+                              │    $ chief new                              │
                               │      Create a PRD interactively              │
                               │                                              │
-                              │    $ chief init "user authentication"        │
+                              │    $ chief new "user authentication"        │
                               │      Generate PRD for a specific feature     │
                               │                                              │
                               ╰──────────────────────────────────────────────╯
@@ -980,7 +980,7 @@ If complete, output: <chief-complete/>
 
 ### PRD Generator Prompt (embed/prd_skill.txt)
 
-Used by `chief init` and `chief edit` - launches an **interactive Claude Code session** with this prompt. The user takes over and collaborates with Claude to build the PRD. Chief just bootstraps the session and exits.
+Used by `chief new` and `chief edit` - launches an **interactive Claude Code session** with this prompt. The user takes over and collaborates with Claude to build the PRD. Chief just bootstraps the session and exits.
 
 For `chief edit`, the existing `.chief/prd.md` is included as context so Claude can modify it:
 
@@ -1214,7 +1214,7 @@ curl -fsSL https://chief.codemonkey.io/install.sh | sh
 
 ### Phase 3: PRD Generation
 
-- [ ] `chief init` command (launches interactive Claude session with embedded prompt)
+- [ ] `chief new` command (launches interactive Claude session with embedded prompt)
 - [ ] `chief edit` command (launches interactive session with existing PRD as context)
 - [ ] Auto-conversion logic (prd.md → prd.json with progress protection)
 - [ ] Merge behavior for preserving story status
@@ -1410,7 +1410,7 @@ Autonomous agent loop for working through PRDs with Claude Code.
 brew install chief
 
 # Create a PRD interactively
-chief init
+chief new
 
 # Run the agent loop
 chief
@@ -1436,9 +1436,9 @@ Chief orchestrates Claude Code to work through user stories autonomously:
 ### Creating a PRD
 
 \`\`\`bash
-chief init                    # Interactive PRD creation
-chief init auth               # Create PRD named "auth"
-chief init auth "OAuth login" # With initial context
+chief new                    # Interactive PRD creation
+chief new auth               # Create PRD named "auth"
+chief new auth "OAuth login" # With initial context
 chief edit                    # Edit existing PRD
 \`\`\`
 
@@ -1542,7 +1542,7 @@ NAME
 
 SYNOPSIS
        chief [options] [prd-name]
-       chief init [name] [context]
+       chief new [name] [context]
        chief edit [name]
        chief status [name]
        chief list

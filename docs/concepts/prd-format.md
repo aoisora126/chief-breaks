@@ -328,9 +328,9 @@ The more context you provide in `prd.md`, the better the output. Include:
 - Any constraints or conventions
 - What "done" looks like beyond acceptance criteria
 
-### Use `chief init` to Get Started
+### Use `chief new` to Get Started
 
-Running `chief init` scaffolds both files with a template. You can also run `chief edit` to open an existing PRD for editing. This is the easiest way to create a well-structured PRD.
+Running `chief new` scaffolds both files with a template. You can also run `chief edit` to open an existing PRD for editing. This is the easiest way to create a well-structured PRD.
 
 ## What's Next
 
