@@ -208,6 +208,8 @@ When Chief is running, the TUI (Terminal UI) provides real-time feedback and int
 The TUI shows two panels: a **status panel** with story progress and a **log panel** streaming Claude's output in real time.
 :::
 
+<PlaceholderImage label="Screenshot: TUI Log View" height="400px" />
+
 ## Exit Codes
 
 Chief uses exit codes to indicate how the process ended:

@@ -1,4 +1,5 @@
 ## Codebase Patterns
+- Global Vue components registered via `app.component()` in `enhanceApp` can be used directly in markdown files without imports
 - VitePress docs live in `/docs` directory with `.vitepress/config.ts` for configuration
 - Use `npm run docs:dev` to start dev server, `npm run docs:build` for production build
 - Base URL is `/chief/` for GitHub Pages project site
@@ -300,4 +301,21 @@
   - VitePress built-in local search (`provider: 'local'`) covers all common search needs: `/` key trigger, search icon in nav bar, page titles and content previews, and keyboard navigation — no additional configuration needed
   - The search configuration goes in `themeConfig.search`, not at the top-level config
   - No additional packages needed — local search is built into VitePress core
+---
+
+## 2026-01-28 - US-019
+- **What was implemented**: Screenshot and recording placeholder components with placeholders on doc pages and images directory
+- **Files changed**:
+  - `docs/.vitepress/theme/components/PlaceholderImage.vue` - new reusable placeholder component with customizable dimensions and label, styled with Tokyo Night colors and dashed border
+  - `docs/.vitepress/theme/components/AsciinemaPlaceholder.vue` - new placeholder for terminal recordings with embed instructions
+  - `docs/.vitepress/theme/index.ts` - registered PlaceholderImage and AsciinemaPlaceholder as global components via `enhanceApp`
+  - `docs/guide/quick-start.md` - added placeholders for chief init flow, TUI dashboard, and asciinema recording
+  - `docs/reference/cli.md` - added TUI log view placeholder in keyboard shortcuts section
+  - `docs/public/images/README.md` - created with list of required screenshots, recording specs, and image guidelines
+  - `.chief/prds/website-docs/prd.json` - marked US-019 as passes: true
+- **Learnings for future iterations:**
+  - VitePress global components are registered in `enhanceApp({ app })` in the theme's `index.ts` using `app.component()`
+  - Global components can be used directly in markdown files without imports (e.g., `<PlaceholderImage label="..." />`)
+  - The `docs/public/` directory serves static assets at the site root (e.g., `docs/public/images/foo.png` → `/chief/images/foo.png`)
+  - Vue component props with default values use `defineProps<{}>()` with optional types (e.g., `width?: string`)
 ---

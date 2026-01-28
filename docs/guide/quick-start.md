@@ -51,6 +51,8 @@ cd your-project
 chief init
 ```
 
+<PlaceholderImage label="Screenshot: chief init flow" height="250px" />
+
 This creates a `.chief/` directory with a sample PRD to get you started. The PRD includes:
 
 - `prd.md` - Human-readable project requirements
@@ -78,6 +80,8 @@ Chief launches a beautiful TUI (Terminal User Interface) that shows:
 - **Live Output** - Real-time streaming from Claude
 - **Progress** - How many stories are complete vs remaining
 
+<PlaceholderImage label="Screenshot: TUI Dashboard" height="400px" />
+
 ### Keyboard Controls
 
 | Key | Action |
@@ -89,6 +93,8 @@ Chief launches a beautiful TUI (Terminal User Interface) that shows:
 ::: info Hands-off operation
 Chief runs autonomously. You can watch the progress or walk away - it will complete your PRD and play a sound when done.
 :::
+
+<AsciinemaPlaceholder label="Recording: Full Chief Workflow (chief init → chief)" />
 
 ## What's Next?
 
