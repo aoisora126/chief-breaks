@@ -128,7 +128,7 @@ For specific problems and solutions.
 
 ### Is there a community chat?
 
-Coming soon. For now, use GitHub Discussions.
+Use [GitHub Discussions](https://github.com/minicodemonkey/chief/discussions) for questions and community support.
 
 ### Can I contribute?
 

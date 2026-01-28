@@ -254,8 +254,6 @@ When Chief is running, the TUI provides real-time feedback and interactive contr
 The TUI has two main views: **Dashboard** showing stories and progress, and **Log** view streaming Claude's output in real time. Press `t` to toggle between them.
 :::
 
-<PlaceholderImage label="Screenshot: TUI Log View" height="400px" />
-
 ## Exit Codes
 
 Chief uses standard exit codes:
