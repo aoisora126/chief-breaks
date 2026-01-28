@@ -224,3 +224,52 @@
   - Directory trees that show surrounding project context (e.g., `src/`, `package.json`) help users understand where `.chief/` fits
   - `::: tip` blocks work well for collaborative workflow notes
 ---
+
+## 2026-01-28 - US-015
+- **What was implemented**: Comprehensive CLI Reference page with complete command documentation
+- **Files changed**:
+  - `docs/reference/cli.md` - expanded from basic reference to comprehensive CLI documentation with:
+    - Top-level usage overview with command summary table (mirrors `chief --help` structure)
+    - Enhanced `chief` (default) command with all flags, defaults, and multiple examples including combined flags
+    - Enhanced `chief init` with interactive prompt details, directory structure output, and example walkthrough
+    - Enhanced `chief edit` with `$EDITOR` tips and flag documentation
+    - Enhanced `chief status` with example output showing completion counts
+    - Enhanced `chief list` with example output showing multi-PRD overview
+    - Improved TUI keyboard shortcuts section with panel description tip
+    - Exit codes section with scripting example using `$?`
+    - Environment variables table with equivalent flag column and override behavior examples
+    - Section dividers and tip/info callouts throughout
+- **Learnings for future iterations:**
+  - Adding example output (commented-out style `# Example output:`) helps users understand what to expect without being misleading
+  - Environment variable tables benefit from an "Equivalent Flag" column showing the CLI override
+  - VitePress `::: tip` blocks are useful for editor configuration hints
+  - Section dividers (`---`) between commands improve scanability in long reference docs
+---
+
+## 2026-01-28 - US-014
+- **What was implemented**: Comprehensive PRD Format Reference page with full documentation of both `prd.md` and `prd.json` formats
+- **Files changed**:
+  - `docs/concepts/prd-format.md` - expanded from basic placeholder to comprehensive reference with:
+    - Detailed `prd.md` guidance with what to include and a full example
+    - Complete `prd.json` schema documentation with top-level, settings, and UserStory field tables
+    - Story selection logic explanation with priority walkthrough table and `inProgress` behavior
+    - Fully annotated example PRD with comments explaining every field
+    - Best practices section: specific acceptance criteria, keeping stories small, ordering by dependency, consistent IDs, giving Claude context
+    - "What's Next" navigation links
+- **Learnings for future iterations:**
+  - JSON doesn't support comments, so annotated examples need an `::: info` callout explaining annotations are for illustration only
+  - Good/bad comparison code blocks are effective for showing best practices (use `// ✓ Good` and `// ✗ Bad` prefixes)
+  - Tables with Story/Priority/Passes/Selected columns are effective for explaining selection logic
+  - The PRD schema reference page (`/reference/prd-schema`) already has TypeScript interfaces — the concepts page should focus on practical usage, not duplicate type definitions
+---
+
+## 2026-01-28 - US-016
+- **What was implemented**: Verified existing Troubleshooting Guide meets all acceptance criteria
+- **Files changed**:
+  - `docs/troubleshooting/common-issues.md` - already had comprehensive content from US-008 covering all 6 required issues (Claude not found, Permission denied, No sound on completion, PRD not updating, Loop not progressing, Max iterations reached) plus 2 additional issues (No PRD Found, Invalid JSON)
+  - `.chief/prds/website-docs/prd.json` - marked US-016 as passes: true
+- **Learnings for future iterations:**
+  - Some stories may already be implemented by earlier stories that created placeholder pages with full content (US-008 created all doc pages with initial content)
+  - Always verify the build passes even when no new content is added — the build check is the quality gate
+  - The troubleshooting page uses a consistent Symptom/Cause/Solution pattern with code examples, which is a good format for debugging guides
+---
