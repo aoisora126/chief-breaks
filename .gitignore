@@ -4,3 +4,10 @@
 
 # Log files
 *.log
+
+# Node.js
+node_modules/
+
+# VitePress
+docs/.vitepress/cache/
+docs/.vitepress/dist/
