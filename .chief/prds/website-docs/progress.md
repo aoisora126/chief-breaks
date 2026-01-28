@@ -319,3 +319,18 @@
   - The `docs/public/` directory serves static assets at the site root (e.g., `docs/public/images/foo.png` → `/chief/images/foo.png`)
   - Vue component props with default values use `defineProps<{}>()` with optional types (e.g., `width?: string`)
 ---
+
+## 2026-01-28 - US-020
+- **What was implemented**: GitHub Actions workflow for automatic deployment to GitHub Pages
+- **Files changed**:
+  - `.github/workflows/docs.yml` - new workflow file that builds VitePress site and deploys to GitHub Pages on push to main
+  - `.chief/prds/website-docs/prd.json` - marked US-020 as passes: true
+- **Learnings for future iterations:**
+  - GitHub Pages deployment uses a two-job pipeline: `build` (upload artifact) and `deploy` (deploy pages)
+  - `actions/configure-pages@v5`, `actions/upload-pages-artifact@v3`, and `actions/deploy-pages@v4` are the current recommended actions
+  - The workflow needs `permissions: pages: write, id-token: write, contents: read` for Pages deployment
+  - `concurrency` group with `cancel-in-progress: false` prevents concurrent deployments from conflicting
+  - `workflow_dispatch` trigger allows manual deployment without a code push
+  - The `paths` filter on push trigger limits builds to changes in `docs/` or the workflow file itself
+  - npm ci with `cache-dependency-path` pointing to `docs/package-lock.json` enables dependency caching
+---
