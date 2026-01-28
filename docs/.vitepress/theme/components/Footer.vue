@@ -7,7 +7,7 @@
     <div class="footer-container">
       <!-- CTA Section -->
       <div class="cta-section">
-        <h2 class="cta-title">Ready to automate your PRDs?</h2>
+        <h2 class="cta-title">Ready to build something big?</h2>
         <p class="cta-subtitle">Get started in minutes with Chief</p>
         <div class="cta-buttons">
           <a href="/chief/guide/" class="cta-button primary">

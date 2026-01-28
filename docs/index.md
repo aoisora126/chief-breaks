@@ -1,11 +1,11 @@
 ---
 layout: home
-description: Chief is an autonomous PRD agent that transforms product requirements into working code. Write a PRD, run Chief, watch your code get built.
+description: Build big projects with Claude. Chief breaks your work into tasks and runs Claude in a loop until they're done.
 
 hero:
   name: Chief
-  text: Autonomous PRD Agent
-  tagline: Write a PRD, run chief, watch your code get built
+  text: Build Big Projects with Claude
+  tagline: Chief breaks your work into tasks. Claude builds them one by one.
   actions:
     - theme: brand
       text: Get Started

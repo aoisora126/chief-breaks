@@ -34,7 +34,7 @@
           </div>
           <h3 class="feature-title">Self-Contained State</h3>
           <p class="feature-description">
-            Everything lives in <code>.chief/</code>. Move your project anywhere and state moves with it.
+            Everything lives in <code>.chief/</code>. Easy to gitignore on shared projects.
           </p>
         </div>
 

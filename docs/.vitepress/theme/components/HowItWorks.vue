@@ -9,7 +9,7 @@
       <p class="section-subtitle">You watch, Claude works</p>
 
       <div class="steps-grid">
-        <!-- Step 1: Write PRD -->
+        <!-- Step 1: Describe Your Project -->
         <div class="step">
           <div class="step-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -21,9 +21,9 @@
             </svg>
           </div>
           <div class="step-number">1</div>
-          <h3 class="step-title">Write PRD</h3>
+          <h3 class="step-title">Describe Your Project</h3>
           <p class="step-description">
-            Define your feature as user stories with acceptance criteria. Chief converts it to a structured format.
+            Break down what you want to build into tasks. Chief takes it from there.
           </p>
         </div>
 
@@ -35,7 +35,7 @@
           </svg>
         </div>
 
-        <!-- Step 2: Chief Runs Loop -->
+        <!-- Step 2: Chief Runs Claude -->
         <div class="step">
           <div class="step-icon step-icon-accent">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -44,9 +44,9 @@
             </svg>
           </div>
           <div class="step-number">2</div>
-          <h3 class="step-title">Chief Runs Loop</h3>
+          <h3 class="step-title">Chief Runs Claude</h3>
           <p class="step-description">
-            Chief invokes Claude Code autonomously, iterating through each story until all acceptance criteria pass.
+            Chief runs Claude in a loop, working through each task until it's done.
           </p>
         </div>
 
@@ -69,7 +69,7 @@
           <div class="step-number">3</div>
           <h3 class="step-title">Code Gets Built</h3>
           <p class="step-description">
-            Each completed story is automatically committed. You return to find working, tested code.
+            One commit per task. No giant diffs to untangle.
           </p>
         </div>
       </div>
