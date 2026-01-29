@@ -10,6 +10,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/minicodemonkey/chief/internal/cmd"
+	"github.com/minicodemonkey/chief/internal/git"
 	"github.com/minicodemonkey/chief/internal/notify"
 	"github.com/minicodemonkey/chief/internal/prd"
 	"github.com/minicodemonkey/chief/internal/tui"
@@ -282,19 +283,33 @@ func runTUIWithOptions(opts *TUIOptions) {
 			prdPath = findAvailablePRD()
 		}
 
-		// If still no PRD found, auto-launch new mode
+		// If still no PRD found, run first-time setup
 		if prdPath == "" {
-			fmt.Println("No PRD found. Let's create your first one!")
-			fmt.Println()
+			cwd, _ := os.Getwd()
+			showGitignore := git.IsGitRepo(cwd) && !git.IsChiefIgnored(cwd)
+
+			// Run the first-time setup TUI
+			result, err := tui.RunFirstTimeSetup(cwd, showGitignore)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
+
+			if result.Cancelled {
+				return
+			}
+
+			// Create the PRD
 			newOpts := cmd.NewOptions{
-				Name: "main",
+				Name: result.PRDName,
 			}
 			if err := cmd.RunNew(newOpts); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				os.Exit(1)
 			}
+
 			// Restart TUI with the new PRD
-			opts.PRDPath = ".chief/prds/main/prd.json"
+			opts.PRDPath = fmt.Sprintf(".chief/prds/%s/prd.json", result.PRDName)
 			runTUIWithOptions(opts)
 			return
 		}
