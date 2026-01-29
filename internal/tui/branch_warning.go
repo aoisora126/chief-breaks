@@ -23,6 +23,8 @@ type BranchWarning struct {
 	currentBranch string
 	prdName       string
 	selectedIndex int
+	editMode      bool   // Whether we're editing the branch name
+	branchName    string // The current branch name (editable)
 }
 
 // NewBranchWarning creates a new branch warning dialog.
@@ -42,11 +44,12 @@ func (b *BranchWarning) SetSize(width, height int) {
 func (b *BranchWarning) SetContext(currentBranch, prdName string) {
 	b.currentBranch = currentBranch
 	b.prdName = prdName
+	b.branchName = fmt.Sprintf("chief/%s", prdName)
 }
 
-// GetSuggestedBranch returns the suggested branch name.
+// GetSuggestedBranch returns the branch name (may be edited by user).
 func (b *BranchWarning) GetSuggestedBranch() string {
-	return fmt.Sprintf("chief/%s", b.prdName)
+	return b.branchName
 }
 
 // MoveUp moves selection up.
@@ -71,6 +74,39 @@ func (b *BranchWarning) GetSelectedOption() BranchWarningOption {
 // Reset resets the dialog state.
 func (b *BranchWarning) Reset() {
 	b.selectedIndex = 0
+	b.editMode = false
+	b.branchName = fmt.Sprintf("chief/%s", b.prdName)
+}
+
+// IsEditMode returns true if the branch name is being edited.
+func (b *BranchWarning) IsEditMode() bool {
+	return b.editMode
+}
+
+// StartEditMode enters edit mode for the branch name.
+func (b *BranchWarning) StartEditMode() {
+	b.editMode = true
+}
+
+// CancelEditMode exits edit mode.
+func (b *BranchWarning) CancelEditMode() {
+	b.editMode = false
+}
+
+// AddInputChar adds a character to the branch name.
+func (b *BranchWarning) AddInputChar(ch rune) {
+	// Only allow valid git branch name characters
+	if (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ||
+		(ch >= '0' && ch <= '9') || ch == '-' || ch == '_' || ch == '/' {
+		b.branchName += string(ch)
+	}
+}
+
+// DeleteInputChar removes the last character from the branch name.
+func (b *BranchWarning) DeleteInputChar() {
+	if len(b.branchName) > 0 {
+		b.branchName = b.branchName[:len(b.branchName)-1]
+	}
 }
 
 // Render renders the branch warning dialog.
@@ -107,44 +143,51 @@ func (b *BranchWarning) Render() string {
 
 	// Options
 	optionStyle := lipgloss.NewStyle().Foreground(TextColor)
-	selectedStyle := lipgloss.NewStyle().
+	selectedOptionStyle := lipgloss.NewStyle().
 		Foreground(PrimaryColor).
 		Bold(true)
 
-	options := []struct {
-		label string
-		desc  string
-	}{
-		{
-			label: fmt.Sprintf("Create branch '%s'", b.GetSuggestedBranch()),
-			desc:  "(Recommended)",
-		},
-		{
-			label: fmt.Sprintf("Continue on '%s'", b.currentBranch),
-			desc:  "",
-		},
-		{
-			label: "Cancel",
-			desc:  "",
-		},
-	}
-
-	for i, opt := range options {
-		var line string
-		if i == b.selectedIndex {
-			line = selectedStyle.Render(fmt.Sprintf("▶ %s", opt.label))
-			if opt.desc != "" {
-				line += " " + lipgloss.NewStyle().Foreground(SuccessColor).Render(opt.desc)
-			}
+	// Render the "Create branch" option with editable field
+	if b.selectedIndex == 0 {
+		content.WriteString(selectedOptionStyle.Render("▶ Create branch "))
+		if b.editMode {
+			// Show editable input field
+			inputStyle := lipgloss.NewStyle().
+				Foreground(TextBrightColor).
+				Background(lipgloss.Color("237"))
+			cursorStyle := lipgloss.NewStyle().Foreground(PrimaryColor).Blink(true)
+			content.WriteString(inputStyle.Render(b.branchName))
+			content.WriteString(cursorStyle.Render("▌"))
 		} else {
-			line = optionStyle.Render(fmt.Sprintf("  %s", opt.label))
-			if opt.desc != "" {
-				line += " " + lipgloss.NewStyle().Foreground(MutedColor).Render(opt.desc)
-			}
+			// Show branch name with edit hint
+			content.WriteString(selectedOptionStyle.Render(fmt.Sprintf("'%s'", b.branchName)))
+			content.WriteString(" ")
+			content.WriteString(lipgloss.NewStyle().Foreground(SuccessColor).Render("(Recommended)"))
+			content.WriteString(" ")
+			content.WriteString(lipgloss.NewStyle().Foreground(MutedColor).Render("[e: edit]"))
 		}
-		content.WriteString(line)
-		content.WriteString("\n")
+	} else {
+		content.WriteString(optionStyle.Render(fmt.Sprintf("  Create branch '%s'", b.branchName)))
+		content.WriteString(" ")
+		content.WriteString(lipgloss.NewStyle().Foreground(MutedColor).Render("(Recommended)"))
 	}
+	content.WriteString("\n")
+
+	// Render "Continue on current branch" option
+	if b.selectedIndex == 1 {
+		content.WriteString(selectedOptionStyle.Render(fmt.Sprintf("▶ Continue on '%s'", b.currentBranch)))
+	} else {
+		content.WriteString(optionStyle.Render(fmt.Sprintf("  Continue on '%s'", b.currentBranch)))
+	}
+	content.WriteString("\n")
+
+	// Render "Cancel" option
+	if b.selectedIndex == 2 {
+		content.WriteString(selectedOptionStyle.Render("▶ Cancel"))
+	} else {
+		content.WriteString(optionStyle.Render("  Cancel"))
+	}
+	content.WriteString("\n")
 
 	// Footer
 	content.WriteString("\n")
@@ -153,7 +196,11 @@ func (b *BranchWarning) Render() string {
 
 	footerStyle := lipgloss.NewStyle().
 		Foreground(MutedColor)
-	content.WriteString(footerStyle.Render("↑/↓: Navigate  Enter: Select  Esc: Cancel"))
+	if b.editMode {
+		content.WriteString(footerStyle.Render("Enter: confirm  Esc: cancel edit"))
+	} else {
+		content.WriteString(footerStyle.Render("↑/↓: Navigate  Enter: Select  Esc: Cancel"))
+	}
 
 	// Modal box style
 	modalStyle := lipgloss.NewStyle().

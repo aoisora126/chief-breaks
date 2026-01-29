@@ -701,6 +701,29 @@ func (a *App) renderBranchWarningView() string {
 
 // handleBranchWarningKeys handles keyboard input for the branch warning dialog.
 func (a App) handleBranchWarningKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	// Handle edit mode input
+	if a.branchWarning.IsEditMode() {
+		switch msg.String() {
+		case "esc":
+			// Cancel edit mode
+			a.branchWarning.CancelEditMode()
+			return a, nil
+		case "enter":
+			// Confirm edit
+			a.branchWarning.CancelEditMode()
+			return a, nil
+		case "backspace":
+			a.branchWarning.DeleteInputChar()
+			return a, nil
+		default:
+			// Add character to branch name
+			if len(msg.String()) == 1 {
+				a.branchWarning.AddInputChar(rune(msg.String()[0]))
+			}
+			return a, nil
+		}
+	}
+
 	switch msg.String() {
 	case "esc":
 		a.viewMode = ViewDashboard
@@ -716,6 +739,13 @@ func (a App) handleBranchWarningKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		a.branchWarning.MoveDown()
 		return a, nil
 
+	case "e":
+		// Start editing branch name if on the create branch option
+		if a.branchWarning.GetSelectedOption() == BranchOptionCreateBranch {
+			a.branchWarning.StartEditMode()
+		}
+		return a, nil
+
 	case "enter":
 		prdName := a.pendingStartPRD
 		prdDir := filepath.Join(a.baseDir, ".chief", "prds", prdName)
@@ -724,7 +754,7 @@ func (a App) handleBranchWarningKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 		switch a.branchWarning.GetSelectedOption() {
 		case BranchOptionCreateBranch:
-			// Create the suggested branch
+			// Create the branch with (possibly edited) name
 			branchName := a.branchWarning.GetSuggestedBranch()
 			if err := git.CreateBranch(a.baseDir, branchName); err != nil {
 				a.lastActivity = "Error creating branch: " + err.Error()
