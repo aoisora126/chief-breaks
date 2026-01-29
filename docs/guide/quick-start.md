@@ -6,6 +6,10 @@ description: Get Chief running quickly. Install via Homebrew, create a PRD, and 
 
 Get Chief running in under 5 minutes.
 
+<div style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
+  <img src="/images/tui-screenshot.png" alt="Chief TUI" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" />
+</div>
+
 ## Prerequisites
 
 Before you begin, make sure you have:

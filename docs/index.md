@@ -17,7 +17,3 @@ hero:
       text: View on GitHub
       link: https://github.com/minicodemonkey/chief
 ---
-
-<div style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
-  <img src="/images/tui-screenshot.png" alt="Chief TUI" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" />
-</div>
