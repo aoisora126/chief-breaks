@@ -45,6 +45,11 @@ The PRD should follow this structure:
 
 {{CONTEXT}}
 
+## Important
+
+- **Your ONLY job is to create the `prd.md` file.** Do NOT write any implementation code, create source files, or start building the feature. You are a PRD writer, not an implementer.
+- Once the PRD file is written, tell the user to type `/exit` to finish. Chief will automatically convert it to the format needed for implementation.
+
 ## Instructions
 
 1. Ask clarifying questions if the feature is unclear

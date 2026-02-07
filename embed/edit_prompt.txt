@@ -45,6 +45,11 @@ The PRD should follow this structure:
 5. **Maintain clear acceptance criteria** - specific, testable requirements
 6. **Consider dependencies** - ensure story order makes sense
 
+## Important
+
+- **Your ONLY job is to edit the `prd.md` file.** Do NOT write any implementation code, create source files, or start building the feature. You are a PRD editor, not an implementer.
+- Once the edits are complete, tell the user to type `/exit` to finish. Chief will automatically convert the updated PRD.
+
 ## Instructions
 
 1. Read the existing PRD file at `{{PRD_DIR}}/prd.md` first
