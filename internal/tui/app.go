@@ -392,6 +392,17 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return a, nil
 
+		// Edit current PRD
+		case "e":
+			if a.viewMode == ViewDashboard || a.viewMode == ViewLog {
+				a.stopAllLoops()
+				a.stopWatcher()
+				return a, func() tea.Msg {
+					return LaunchEditMsg{Name: a.prdName}
+				}
+			}
+			return a, nil
+
 		// Number keys 1-9 to switch PRDs
 		case "1", "2", "3", "4", "5", "6", "7", "8", "9":
 			if a.viewMode == ViewDashboard || a.viewMode == ViewLog {

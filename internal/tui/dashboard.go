@@ -163,18 +163,18 @@ func (a *App) renderFooter() string {
 
 	if a.viewMode == ViewLog {
 		// Log view shortcuts
-		shortcuts = []string{"t: dashboard", "n: new", "l: list", "1-9: switch", "?: help", "j/k: scroll", "q: quit"}
+		shortcuts = []string{"t: dashboard", "e: edit", "n: new", "l: list", "1-9: switch", "?: help", "j/k: scroll", "q: quit"}
 	} else {
 		// Dashboard view shortcuts
 		switch a.state {
 		case StateReady, StatePaused:
-			shortcuts = []string{"s: start", "t: log", "n: new", "l: list", "1-9: switch", "?: help", "q: quit"}
+			shortcuts = []string{"s: start", "e: edit", "t: log", "n: new", "l: list", "1-9: switch", "?: help", "q: quit"}
 		case StateRunning:
 			shortcuts = []string{"p: pause", "x: stop", "t: log", "n: new", "l: list", "1-9: switch", "?: help", "q: quit"}
 		case StateStopped, StateError:
-			shortcuts = []string{"s: retry", "t: log", "n: new", "l: list", "1-9: switch", "?: help", "q: quit"}
+			shortcuts = []string{"s: retry", "e: edit", "t: log", "n: new", "l: list", "1-9: switch", "?: help", "q: quit"}
 		default:
-			shortcuts = []string{"t: log", "n: new", "l: list", "1-9: switch", "?: help", "q: quit"}
+			shortcuts = []string{"e: edit", "t: log", "n: new", "l: list", "1-9: switch", "?: help", "q: quit"}
 		}
 	}
 	shortcutsStr := footerStyle.Render(strings.Join(shortcuts, "  │  "))
@@ -202,18 +202,18 @@ func (a *App) renderNarrowFooter() string {
 
 	if a.viewMode == ViewLog {
 		// Log view shortcuts - condensed
-		shortcuts = []string{"t", "n", "1-9", "?", "q"}
+		shortcuts = []string{"t", "e", "n", "1-9", "?", "q"}
 	} else {
 		// Dashboard view shortcuts - condensed
 		switch a.state {
 		case StateReady, StatePaused:
-			shortcuts = []string{"s", "t", "n", "1-9", "?", "q"}
+			shortcuts = []string{"s", "e", "t", "n", "1-9", "?", "q"}
 		case StateRunning:
 			shortcuts = []string{"p", "x", "t", "n", "1-9", "?", "q"}
 		case StateStopped, StateError:
-			shortcuts = []string{"s", "t", "n", "1-9", "?", "q"}
+			shortcuts = []string{"s", "e", "t", "n", "1-9", "?", "q"}
 		default:
-			shortcuts = []string{"t", "n", "1-9", "?", "q"}
+			shortcuts = []string{"e", "t", "n", "1-9", "?", "q"}
 		}
 	}
 	shortcutsStr := footerStyle.Render(strings.Join(shortcuts, " "))
@@ -466,13 +466,9 @@ func (a *App) renderEmptyPRDPanel(width, height int) string {
 	content.WriteString(labelStyle.Render("To add stories:"))
 	content.WriteString("\n")
 	content.WriteString("• Press ")
-	content.WriteString(ShortcutKeyStyle.Render("l"))
-	content.WriteString(" then ")
 	content.WriteString(ShortcutKeyStyle.Render("e"))
 	content.WriteString(" to edit this PRD with Claude\n")
 	content.WriteString("• Press ")
-	content.WriteString(ShortcutKeyStyle.Render("l"))
-	content.WriteString(" then ")
 	content.WriteString(ShortcutKeyStyle.Render("n"))
 	content.WriteString(" to create a new PRD with Claude\n")
 	content.WriteString("\n")
