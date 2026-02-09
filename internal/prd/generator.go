@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -142,6 +143,7 @@ func runClaudeConversion(absPRDDir string) error {
 
 	cmd := exec.Command("claude",
 		"--dangerously-skip-permissions",
+		"--output-format", "stream-json",
 		"-p", prompt,
 	)
 	cmd.Dir = absPRDDir
@@ -149,11 +151,16 @@ func runClaudeConversion(absPRDDir string) error {
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return fmt.Errorf("failed to create stdout pipe: %w", err)
+	}
+
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("failed to start Claude: %w", err)
 	}
 
-	return waitWithSpinner(cmd, "Converting prd.md to prd.json...", &stderr)
+	return waitWithProgress(cmd, stdout, "Converting prd.md to prd.json...", &stderr)
 }
 
 // runClaudeJSONFix asks Claude to fix an invalid prd.json file.
@@ -220,6 +227,142 @@ func waitWithSpinner(cmd *exec.Cmd, message string, stderr *bytes.Buffer) error 
 			frame++
 		}
 	}
+}
+
+// waitWithProgress runs a two-line progress display while waiting for a streaming command to finish.
+// It parses Claude's stream-json output to show real-time activity (tool usage, thinking).
+func waitWithProgress(cmd *exec.Cmd, stdout io.ReadCloser, message string, stderr *bytes.Buffer) error {
+	done := make(chan error, 1)
+	activity := make(chan string, 10)
+
+	// Read stdout in a goroutine, parse stream-json events
+	go func() {
+		scanner := bufio.NewScanner(stdout)
+		scanner.Buffer(make([]byte, 1024*1024), 1024*1024)
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" {
+				continue
+			}
+			tool, input, text := parseStreamLine(line)
+			if tool != "" {
+				activity <- describeToolActivity(tool, input)
+			} else if text != "" {
+				activity <- "Analyzing PRD..."
+			}
+		}
+	}()
+
+	go func() {
+		done <- cmd.Wait()
+	}()
+
+	startTime := time.Now()
+	frame := 0
+	currentActivity := "Starting..."
+	ticker := time.NewTicker(80 * time.Millisecond)
+	defer ticker.Stop()
+
+	// Print initial two lines
+	fmt.Printf("\r\033[K%s %s (%s)\n\033[K  → %s", spinnerFrames[0], message, formatElapsed(time.Since(startTime)), currentActivity)
+
+	for {
+		select {
+		case err := <-done:
+			// Clear both lines: move up one line, clear it, clear current line
+			fmt.Print("\r\033[K\033[A\r\033[K")
+			if err != nil {
+				return fmt.Errorf("Claude failed: %s", stderr.String())
+			}
+			return nil
+		case act := <-activity:
+			currentActivity = act
+		case <-ticker.C:
+			elapsed := formatElapsed(time.Since(startTime))
+			spinner := spinnerFrames[frame%len(spinnerFrames)]
+			// Move up one line, clear and redraw line 1, move down and clear and redraw line 2
+			fmt.Printf("\r\033[A\r\033[K%s %s (%s)\n\r\033[K  → %s", spinner, message, elapsed, currentActivity)
+			frame++
+		}
+	}
+}
+
+// describeToolActivity returns a human-readable description of a tool invocation.
+func describeToolActivity(tool string, input map[string]interface{}) string {
+	switch tool {
+	case "Read":
+		if path, ok := input["file_path"].(string); ok {
+			return "Reading " + filepath.Base(path)
+		}
+		return "Reading file"
+	case "Write":
+		if path, ok := input["file_path"].(string); ok {
+			return "Writing " + filepath.Base(path)
+		}
+		return "Writing file"
+	case "Edit":
+		if path, ok := input["file_path"].(string); ok {
+			return "Editing " + filepath.Base(path)
+		}
+		return "Editing file"
+	case "Glob":
+		return "Searching files"
+	case "Grep":
+		return "Searching content"
+	default:
+		return "Running " + tool
+	}
+}
+
+// parseStreamLine extracts tool info or assistant text from a stream-json line.
+// Returns (toolName, toolInput, assistantText). At most one will be non-zero.
+func parseStreamLine(line string) (string, map[string]interface{}, string) {
+	var msg struct {
+		Type    string          `json:"type"`
+		Message json.RawMessage `json:"message,omitempty"`
+	}
+	if err := json.Unmarshal([]byte(line), &msg); err != nil {
+		return "", nil, ""
+	}
+	if msg.Type != "assistant" || msg.Message == nil {
+		return "", nil, ""
+	}
+
+	var assistant struct {
+		Content []struct {
+			Type  string                 `json:"type"`
+			Text  string                 `json:"text,omitempty"`
+			Name  string                 `json:"name,omitempty"`
+			Input map[string]interface{} `json:"input,omitempty"`
+		} `json:"content"`
+	}
+	if err := json.Unmarshal(msg.Message, &assistant); err != nil {
+		return "", nil, ""
+	}
+
+	for _, block := range assistant.Content {
+		switch block.Type {
+		case "tool_use":
+			return block.Name, block.Input, ""
+		case "text":
+			if text := strings.TrimSpace(block.Text); text != "" {
+				return "", nil, text
+			}
+		}
+	}
+	return "", nil, ""
+}
+
+// formatElapsed formats a duration as a human-readable elapsed time string.
+// Examples: "0s", "5s", "1m 12s", "2m 0s"
+func formatElapsed(d time.Duration) string {
+	d = d.Truncate(time.Second)
+	if d < time.Minute {
+		return fmt.Sprintf("%ds", int(d.Seconds()))
+	}
+	minutes := int(d.Minutes())
+	seconds := int(d.Seconds()) % 60
+	return fmt.Sprintf("%dm %ds", minutes, seconds)
 }
 
 // NeedsConversion checks if prd.md is newer than prd.json, indicating conversion is needed.
